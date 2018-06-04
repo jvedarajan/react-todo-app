@@ -1,0 +1,82 @@
+{
+      "Dashboard": {
+            "menuname": "Dashboard",
+            "iconclass": "fa fa-tachometer",
+            "added_lists": [],
+            "display_order": "1",
+            "created_at": "-",
+            "type": "default",
+            "path": "/dashboard",
+            "component": "DashboardContent"
+      },
+      "My-Day": {
+            "menuname": "My-Day",
+            "iconclass": "fa fa-calendar-o",
+            "added_lists": [],
+            "display_order": "2",
+            "created_at": "-",
+            "type": "default",
+            "path": "/myday",
+            "component": "MyDay"
+      },
+      "To-Do": {
+            "menuname": "To-Do",
+            "iconclass": "fa fa-home",
+            "added_lists": [],
+            "display_order": "3",
+            "created_at": "-",
+            "type": "default",
+            "path": "/todo",
+            "component": "Todo"
+      },
+      "Groceries": {
+            "menuname": "Groceries",
+            "iconclass": "fa fa-shopping-cart",
+            "added_lists": [],
+            "display_order": "4",
+            "created_at": "-",
+            "type": "default",
+            "path": "/groceries",
+            "component": "TasksComponent"
+      },
+      "Work": {
+            "menuname": "Work",
+            "iconclass": "fa fa-briefcase",
+            "added_lists": [],
+            "display_order": "5",
+            "created_at": "-",
+            "type": "default",
+            "path": "/work",
+            "component": "TasksComponent"
+      },
+      "Movies To Watch": {
+            "menuname": "Movies To Watch",
+            "iconclass": "fa fa-file-video-o",
+            "added_lists": [],
+            "display_order": "6",
+            "created_at": "-",
+            "type": "default",
+            "path": "/watchmovies",
+            "component": "TasksComponent"
+      },
+      "Family": {
+            "menuname": "Family",
+            "iconclass": "fa fa-users",
+            "added_lists": [],
+            "display_order": "7",
+            "created_at": "-",
+            "type": "default",
+            "path": "/family",
+            "component": "TasksComponent"
+      },
+      "Travel": {
+            "menuname": "Travel",
+            "iconclass": "fa fa-car",
+            "added_lists": [],
+            "display_order": "8",
+            "created_at": "-",
+            "type": "default",
+            "path": "/travel",
+            "component": "TasksComponent"
+      }
+}

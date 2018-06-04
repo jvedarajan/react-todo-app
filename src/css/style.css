@@ -1,0 +1,436 @@
+html, body {
+  height: 100%;
+   margin:0;
+    padding:0;
+    font-family: 'Lato', sans-serif;
+}
+.login-container{
+   background-image: url("../images/bg2.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    height: 100%;
+}
+.login-banner>form input.form-control{
+    height:44px;
+    border-radius:25px;
+    opacity:0.4;
+    border:none !important;
+}
+form input.form-control.invalid{
+  opacity:0.8;
+  background-color:#fff !important;
+  color:red;
+  border:1px solid red !important;
+}
+.login-banner form input.form-control::-webkit-input-placeholder,.login-banner form input.form-control:-moz-placeholder
+ ,.login-banner form input.form-control:-ms-input-placeholder ,.login-banner form input.form-control:-moz-placeholder{ /* Chrome/Opera/Safari,Firefox 19+ ,IE 10+,Firefox 18-*/
+    color: #f512e1;
+    text-align:center;
+    background-color:#fff !important;
+  }
+  .login-banner form input.form-control.invalid::-webkit-input-placeholder,.login-banner form input.form-control.invalid:-moz-placeholder
+ ,.login-banner form input.form-control.invalid:-ms-input-placeholder ,.login-banner form input.form-control.invalid:-moz-placeholder{ /* Chrome/Opera/Safari,Firefox 19+ ,IE 10+,Firefox 18-*/
+    color:red;
+  }
+  .login-container>.row{
+    margin:0;
+  }
+  .login-banner{
+    margin-top:15%;
+    height: 100%;
+    margin-bottom:14%;
+  }
+  .login-banner .btn-login{
+    width:100%;
+    height:44px;
+    text-align:center;
+    color:#fff;
+    border:none;
+    border-radius:25px;
+    background:#f512e1;
+    font-weight:700;
+    font-size:16px;
+    opacity:0.4;
+  }
+  .logo{
+    text-align:center;
+  }
+  .login-banner img.app_logo{
+    width:180px;
+    height:105px;
+   bottom:30px;
+  }
+  span.error{
+    color:red;
+    display:block;
+  }
+  span.error.hide{
+    display:none;
+  }
+  .side_nav{
+    padding:0px;
+    background:#FFF;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.6); 
+    -moz-box-shadow: 0 0 25px rgba(0, 0, 0, 0.6); 
+    -webkit-box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+    height:100%;
+    overflow-y:auto;
+    position:fixed;
+    top:0;
+    left:0;
+  }
+  .side_nav ul{
+    padding: 5px;
+  }
+  .side_nav ul li{
+    list-style-type: none;
+    cursor:pointer;
+  }
+.side_nav .menu i{
+  margin:3px 15px;
+  display:inline-block;
+  font-size:25px;
+  color:#00ACC1;
+  font-weight:100;
+  padding-top:5px;
+}
+.user_photo.menu{
+  margin:3px 15px;
+  width:36px;
+  height:36px;
+  top:0px;
+  bottom:14px;
+  display:inline-block;
+}
+.side_nav li.menu:hover{
+  background-color:#E0F7FA;
+}
+.dashboard-container{
+  margin:0;
+  padding:0px 15px;
+}
+span.d-md-block{
+  display:inline-block !important;
+}
+.top_bg_image{
+  background-image: url("../images/bg3.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  height: 240px;
+}
+.content{
+  padding:0px 0px 0px 3px;
+  left:225px;
+}
+.img_head{
+  position:absolute;
+  left:50px;
+  color:#fff;
+  top:150px;
+}
+.input-group{
+  margin-top:12px;
+}
+.input-group .input-group-append{
+  color:#fff;
+  background-color:#00ACC1;
+}
+.input-group-text{
+  color:#fff !important;
+  border:none !important;
+  background-color:#00ACC1 !important;
+}
+.hide{
+  display:none;
+}
+.bottom_content .row{
+ margin:0;
+ padding:15px;
+}
+.content_title{
+  border-bottom:2px solid #ccc;
+  width:95%;
+}
+.dashboard_notification{
+  width: 100%;
+    margin: 15px 0px;
+    text-align: center;
+}
+.cards_div{
+  padding:0;
+  margin:0;
+}
+.dashboard_cards{
+  border-radius:0;
+  width:96%;
+  margin: 15px 0px;
+}
+.right{
+  float:right;
+}
+.padding_none{
+  padding:0 !important;
+}
+.dashboard_cards.sub{
+  height:120px;
+}
+.side_nav ul li a{
+  text-decoration:none;
+  color: #212529;
+}
+span.menu_itemcount{
+  float: right;
+  margin-top: 12px;
+  padding-right:12px;
+  color:#00ACC1;
+}
+.side_nav ul li:nth-child(1) span{
+  font-size:13px;
+}
+.dashboard_cards  .card-body{
+  text-align:center;
+}
+.dashboard_cards  .card-body p.count{
+  color:#00ACC1;
+  font-size:33px;
+  font-weight:600;
+}
+.todo_cards{
+  margin:10px 0px;
+}
+.todo_cards .card-header{
+  font-size:16px;
+  font-weight:600;
+}
+.todo_cards ul li{
+  list-style-type: none;
+  color:#000;
+  font-size:16px;
+  font-weight:400;
+  cursor:pointer;
+}
+.todo_cards ul li span{
+  position: absolute;
+}
+.todo_cards ul li span.created_listtime{
+  right:15px;
+}
+.todo_cards ul li span.edit_lists{
+  left:25px;
+  color:orange;
+  padding-top:2px;
+}
+.todo_cards ul li span.delete_lists{
+  left:50px;
+  color:red;
+}
+.modal{
+  display:none;
+  position:fixed;
+  z-index:1;
+  padding-top:100px;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  overflow:auto;
+  background-color:rgb(0,0,0);
+  background-color:rgb(0,0,0,0.4);
+}
+.modal-content{
+  background-color:#fefefe;
+  margin:0;
+  padding:20px;
+  border:1px solid #888;
+  width:80%;
+}
+.close{
+  color:#aaaaaa;
+  float:right;
+  font-size:28px;
+  font-weight:bold;
+}
+.close:hover,.close:focus{
+  color:#000;
+  text-decoration:none;
+  cursor:pointer;
+}
+.modal-header{
+  padding:0px;
+}
+.modal-body .btn,.add-task-btn{
+  background-color:#00ACC1;
+  color:#fff;
+  border:none;
+  float:right;
+}
+#modalTask .modal-body .btn{
+  width:170px;
+  border-radius:0;
+}
+.add-task-btn{
+  border-radius:25px;
+}
+.todo_cards.default:not(.myday_todo) ul li:last-child{
+  padding:10px;
+  cursor:default;
+}
+.todo_cards.default:not(.myday_todo) ul li:last-child span{
+  right:75px;
+  color:#00ACC1;
+  font-weight: 500;
+    font-size: 18px;
+    margin-top: 2px;
+}
+.todo_cards.default .card-body{
+  padding:0px !important;
+}
+#modalAddTask .modal-header>h5{
+  color:#00ACC1;
+  font-size: 17px;
+}
+.todo_cards.default ul li{
+    height:60px;
+}
+.todo_cards.default:not(.myday_todo) .card-body ul li span:nth-child(3){
+  left:75px;
+}
+.btn-cancel{
+  background-color:orange !important;
+}
+.btn-delete{
+  background-color:red !important;
+}
+.myday_todo .card-header>span{
+  font-weight:100;
+  font-size:15px;
+  position: absolute;
+  right:15px;
+}
+.myday_todo span.task_status{
+  font-size:10px;
+  text-transform:uppercase ;
+  right:0px;
+  font-weight:600;
+}
+.myday_todo span.task_status.pending{
+  color:orangered;
+}
+.myday_todo span.task_status.completed{
+  color:green;
+}
+/* The container */
+label.checkobox {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+/* Hide the browser's default checkbox */
+label.checkobox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius:25px;
+}
+
+/* On mouse-over, add a grey background color */
+label.checkobox:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+label.checkobox input:checked ~ .checkmark {
+  background-color: #00ACC1;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+label.checkobox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+label.checkobox .checkmark:after {
+  left: 8px;
+    top: 5px;
+    width: 8px;
+    height: 13px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(42deg);
+  -ms-transform: rotate(42deg);
+  transform: rotate(42deg);
+}
+p.task_desc{
+  font-size:12px;
+}
+.disabled{
+  pointer-events: none;
+  opacity:0.5;
+}
+p.task_status{
+  font-size:12px;
+  margin-top:25px;
+  margin-left:55px;
+}
+p.task_status.pending{
+  color:orange;
+}
+p.task_status.completed{
+  color:green;
+}
+.list-group-item.no_border{
+  border:none !important;
+  padding:0;
+  margin-left:-50px;
+}
+.edit_lists.todo{
+  left:35px !important;
+}
+label.checkobox.todo{
+  padding-left:60px !important;
+}
+.logout_section{
+  float:right;
+  margin-right:40px;
+  margin-top:20px;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+@media screen and (max-width: 576px) {
+  .dashboard-container .side_nav {
+    width:100px;
+    position: absolute;
+  }
+  .dashboard-container .cotent{
+  }
+}
