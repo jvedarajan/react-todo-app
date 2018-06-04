@@ -1,6 +1,6 @@
 import React from 'react';
 import userphoto from '../images/user_icon.png';
-import {  Route, BrowserRouter as HashRouter, NavLink } from 'react-router-dom';
+import {  Route, BrowserRouter as HashRouter, NavLink,Switch } from 'react-router-dom';
 //import { Redirect } from 'react-router'
 
 import DashboardContent from "./DashboardContent";
@@ -14,6 +14,7 @@ document.onclick = function () {
                 thisElement.nextSibling.classList.add('hide');
         }
 }
+const newListAdded = [];
 class Dashboard extends React.Component {
         constructor(props) {
                 super();
@@ -32,10 +33,19 @@ class Dashboard extends React.Component {
                 }
                 this.state = { datetime: this._loadCurrentTime(), menus: userMenusStorage, userRowIndex: userRowIndex, allUsersInfo: userInformation, loggedUser: loggedUserEmail };
                 this._getTime();
+                this._loadCustomTasks();
           }else{
                 this.setState({ redirect: true });
                 window.location.href = "http://localhost:3000";  
           }
+        }
+        _loadCustomTasks = () =>{
+             const getMenus = this.state.menus ;   
+             Object.keys(getMenus).map(function (menuObject, ind) {
+                if (getMenus[menuObject].type === 'custom') {
+                        newListAdded.push({ "path": "/" + getMenus[menuObject].menuname.toLowerCase(),"component": "TasksComponent","task":getMenus[menuObject].menuname});
+                  }
+                });
         }
         _getTime = () => {
                 this.setState({ datetime: this._loadCurrentTime() });
@@ -111,6 +121,7 @@ class Dashboard extends React.Component {
                                         "component": "TasksComponent"
                                 };
                                 createMenuObj[key] = createJSON;
+                                newListAdded.push({ "path": "/" + newList.toLowerCase(),"component": "TasksComponent","task":newList});
                                 newlistElement.classList.remove('hide');
                                 newlistElement.nextSibling.classList.add('hide');
                                 /*   const fs = require('fs');
@@ -284,6 +295,11 @@ class Dashboard extends React.Component {
                                                         <Route path="/watchmovies" render={(props) => <TasksComponent {...props} states={this.state} taskType='Movies To Watch' />} />
                                                         <Route path="/family" render={(props) => <TasksComponent {...props} states={this.state} taskType='Family' />} />
                                                         <Route path="/travel" render={(props) => <TasksComponent {...props} states={this.state} taskType='Travel' />} />
+                                                        <Switch>
+                                                        {newListAdded.map(route => (
+                                                                <Route key={route.path}  path={route.path} render={(props) => <TasksComponent {...props} states={this.state} taskType={route.task} />} />
+                                                        ))}
+                                                        </Switch>
                                                 </div>
                                         </div>
                                 </div>
