@@ -22,7 +22,7 @@ class DashboardContent extends Component {
                   this.state.pendingTask++;
                }
                if(status==="completed"){
-                this.state.completedtask++;
+                 this.state.completedTask++;
                }
             }
         } 
@@ -35,9 +35,9 @@ class DashboardContent extends Component {
             const addedLists = getUserMenus[obj].added_lists;
             const addedListsCount = addedLists.length;
             if (addedListsCount > 0) {
-                listNo++ ;
                 if (getUserMenus[obj].menuname !== 'My-Day') {
                    return addedLists.map(function(item, j){
+                         listNo++ ;
                         return (<tr key={listNo}><td>{listNo}</td><td>{addedLists[j].title}</td><td>{getUserMenus[obj].menuname}</td><td>{addedLists[j].status}</td><td>{_this.dateFormatChange(addedLists[j].created_at)}</td><td>{_this.dateFormatChange(addedLists[j].completed_at)}</td></tr>);
                     });
                 }

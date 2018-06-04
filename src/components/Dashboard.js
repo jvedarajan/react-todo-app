@@ -224,6 +224,18 @@ class Dashboard extends React.Component {
               //  return <Redirect to='/'/>; 
               window.location.href = "http://localhost:3000";
         }
+        showSideMenu = (elem) =>{
+             const displayType =  this.refs.menu_icon.getAttribute("data-display") ; 
+             if(displayType==="show"){
+                this.refs.side_nav.style.display = "block";  
+                this.refs.menu_bar.style.left = "120px"; 
+                this.refs.menu_icon.setAttribute('data-display', 'hide');
+             }else{
+                this.refs.side_nav.style.display = "none";  
+                this.refs.menu_bar.style.left = "10px"; 
+                this.refs.menu_icon.setAttribute('data-display', 'show');    
+             }
+        }
         render() {
                 //const renderComponentMenus = this.state.menus;
                // const states = this.state;
@@ -235,7 +247,7 @@ class Dashboard extends React.Component {
                 return (<HashRouter>
                         <div className="container-fluid dashboard-container">
                                 <div className="row">
-                                        <div className="col-sm-2 col-md-2 col-lg-2 side_nav">
+                                        <div className="col-sm-2 col-md-2 col-lg-2 side_nav" ref="side_nav">
                                                 <ul>
                                                         <li><img src={userphoto} alt="logo" className="img-fluid user_photo menu" /><span>{this.state.loggedUser}</span></li>
                                                         {this.displayData()}
@@ -254,6 +266,9 @@ class Dashboard extends React.Component {
                                                 <div className="top_bg_image">
                                                          <div className="logout_section">
                                                                 <a onClick={() => this.clickLogout()}>LOGOUT</a>
+                                                        </div>
+                                                        <div className="menu_bar d-none d-sm-block d-md-none d-block d-sm-none" ref="menu_bar">
+                                                                 <span onClick={((e) => this.showSideMenu(e))} data-display="show" ref="menu_icon"><i className="fa fa-bars" aria-hidden="true"></i></span>
                                                         </div>
                                                         <div className="img_head">
                                                                 <h1 >My ToDo</h1>

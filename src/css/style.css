@@ -425,12 +425,22 @@ label.checkobox.todo{
   font-size:16px;
   cursor:pointer;
 }
+.menu_bar{
+  position: absolute;
+  top:10px;
+  color:#fff;
+  left:10px;
+  font-size:22px;
+  cursor:pointer;
 
+}
 @media screen and (max-width: 576px) {
   .dashboard-container .side_nav {
-    width:100px;
-    position: absolute;
+    display:none;
+    width:112px;
+    z-index:10;
   }
-  .dashboard-container .cotent{
+  .dashboard-container .content{
+    left:0px ;
   }
 }
