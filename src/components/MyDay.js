@@ -3,8 +3,7 @@ class MyDay extends Component {
   constructor(props) {
     super(props);
     this.showTodayDate();
-     const uMenus = this.props.states.menus;
-    this.state = { menus: uMenus };
+
 }
 showTodayDate=()=>{
   const todayDate = this.props.states.datetime;

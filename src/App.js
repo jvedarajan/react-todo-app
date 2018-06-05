@@ -8,8 +8,8 @@ import { BrowserRouter as Router  } from 'react-router-dom';
 //import './App.css';
 //import {store,history} from './store';
 
-import '../node_modules/font-awesome/css/font-awesome.min.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import 'font-awesome/css/font-awesome.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/font.lato.css';
 import './css/style.css';
 import Login from './components/Login';

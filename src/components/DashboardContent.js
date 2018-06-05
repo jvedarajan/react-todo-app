@@ -66,16 +66,7 @@ class DashboardContent extends Component {
                 </div>
                     </div>
                     <div className="row padding_none">
-                        <div className="col-sm-12 col-md-6 col-lg-6 cards_div">
-                            <div className="card dashboard_cards">
-                                <div className="card-body">Basic card</div>
-                            </div>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 cards_div">
-                            <div className="card dashboard_cards right">
-                                <div className="card-body">Basic card</div>
-                            </div>
-                        </div>
+                        
                         <div className="col-sm-12 col-md-12 col-lg-12 card">
                             <div className="table-responsive">
                             <table className="table">

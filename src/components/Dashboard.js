@@ -1,6 +1,6 @@
 import React from 'react';
 import userphoto from '../images/user_icon.png';
-import {  Route, BrowserRouter as HashRouter, NavLink,Switch } from 'react-router-dom';
+import {  Route, BrowserRouter as HashRouter, NavLink,Switch,Router } from 'react-router-dom';
 //import { Redirect } from 'react-router'
 
 import DashboardContent from "./DashboardContent";
@@ -28,10 +28,11 @@ class Dashboard extends React.Component {
                           userRowIndex = localStorage.getItem('userRow');
                         const usersRow = userInformation.users;
                         var userMenusStorage = usersRow[userRowIndex].userMenus;
+                        var userName = usersRow[userRowIndex].userName;
                 } else {
                         userMenusStorage = '';
                 }
-                this.state = { datetime: this._loadCurrentTime(), menus: userMenusStorage, userRowIndex: userRowIndex, allUsersInfo: userInformation, loggedUser: loggedUserEmail };
+                this.state = { datetime: this._loadCurrentTime(), menus: userMenusStorage, userRowIndex: userRowIndex, allUsersInfo: userInformation, loggedUser: loggedUserEmail,loggedUserName:userName };
                 this._getTime();
                 this._loadCustomTasks();
           }else{
@@ -260,7 +261,7 @@ class Dashboard extends React.Component {
                                 <div className="row">
                                         <div className="col-sm-2 col-md-2 col-lg-2 side_nav" ref="side_nav">
                                                 <ul>
-                                                        <li><img src={userphoto} alt="logo" className="img-fluid user_photo menu" /><span>{this.state.loggedUser}</span></li>
+                                                        <li><img src={userphoto} alt="logo" className="img-fluid user_photo menu" /><span>{this.state.loggedUserName}</span></li>
                                                         {this.displayData()}
                                                         <li className="menu addnew" data-menu="addnew" onClick={((e) => this.handleAddNew(e))} id="newlist" ref="newlist"><i className="fa fa-plus" aria-hidden="true"></i><span className="d-none d-md-block">New List</span></li>
                                                         <li className="addlist hide" >

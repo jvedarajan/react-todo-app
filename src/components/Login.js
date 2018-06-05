@@ -7,6 +7,7 @@ import React from 'react';
 import applogo from '../images/Todo-Pollo-logo.png';
 //var SHA256 = require("crypto-js/sha256");
 import userMenus from '../jsons/usermenus.json';
+import RegisterForm from "./RegisterForm";
 if (localStorage.getItem('userInfo') !== undefined) {
   var userInformation = JSON.parse(localStorage.getItem('userInfo'));
 }
@@ -31,7 +32,7 @@ class Login extends React.Component {
     const password = this.state.password;
     const emailElement = this.refs.email;
     const pwdElement = this.refs.password;
-    var checkEmailVal = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    const checkEmailVal = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     var flag;
     if (!checkEmailVal.test(email)) {
       emailElement.classList.add('invalid');
@@ -53,33 +54,45 @@ class Login extends React.Component {
     }
     if (flag === true) {
       var usersRow, userRowIndex;
-      var userInfoObj = { "userEmail": email, "userPassword": password, "loginStatus": 1, userMenus };
+     // var userInfoObj = { "userEmail": email, "userPassword": password, "loginStatus": 1, userMenus };
       if (userInformation !== null && userInformation !== undefined) {
         usersRow = userInformation.users;
         userRowIndex = usersRow.map(function (e) { return e.userEmail; }).indexOf(email);
         if (userRowIndex === -1) {
-          usersRow.push(userInfoObj);
-          localStorage.setItem('userInfo', JSON.stringify(userInformation));
+         /* usersRow.push(userInfoObj);
+          localStorage.setItem('userInfo', JSON.stringify(userInformation));*/
+         this.refs.reg_error.classList.remove('hide');
         } else {
+          this.refs.reg_error.classList.add('hide');
           if (usersRow[userRowIndex].userPassword !== password) {
             pwdElement.classList.add('invalid');
             pwdElement.nextElementSibling.classList.remove('hide');
             pwdElement.nextElementSibling.innerHTML = "Invalid Password";
           } else {
+            localStorage.setItem('loggedUser', email);
+            localStorage.setItem('userRow', userRowIndex);
             this.props.history.push('/dashboard');
           }
         }
-      } else {
+      }else{
+        this.refs.reg_error.classList.remove('hide');
+      } /*else {
         var users = [];
         users.push(userInfoObj);
-        var createNewObj = { "users": users };
+       const createNewObj = { "users": users };
         localStorage.setItem('userInfo', JSON.stringify(createNewObj));
         this.props.history.push('/dashboard');
         userRowIndex = 0;
       }
       localStorage.setItem('loggedUser', email);
-      localStorage.setItem('userRow', userRowIndex);
+      localStorage.setItem('userRow', userRowIndex);*/
     }
+  }
+  handleClickRegister = () => {
+    const formDiv = this.refs.loginBlock;
+    formDiv.style.display = "none";
+    const regBlock = this.refs.registerBlock;
+    regBlock.style.display = "block";
   }
   componentWillMount = () => {
 
@@ -90,17 +103,24 @@ class Login extends React.Component {
         <div className="row">
           <div className="col-sm-12 col-md-4 offset-md-4 offset-lg-4 login-banner">
             <div className="logo"> <img src={applogo} className="img-fluid justify-content-center app_logo" alt="logo" /></div>
-            <form>
-              <div className="form-group">
-                <input type="email" className="form-control" id="email" ref="email" name="email" placeholder="Email Address" onBlur={((e) => this.handleChange(e))} />
-                <span className="error hide">Please Enter Valid Email </span>
-              </div>
-              <div className="form-group">
-                <input type="password" className="form-control" name="password" ref="password" id="password" placeholder="Password" onBlur={((e) => this.handleChange(e))} />
-                <span className="error hide">Please Enter Valid Password </span>
-              </div>
-              <button type="button" className="btn btn-default btn-login" onClick={this.handleloginSubmit.bind(this)}>Login</button>
-            </form>
+            <div ref="loginBlock" id="login_block">
+              <form>
+                <div className="form-group">
+                  <input type="email" className="form-control" id="email" ref="email" name="email" placeholder="Email Address" onBlur={((e) => this.handleChange(e))} />
+                  <span className="error hide">Please Enter Valid Email </span>
+                </div>
+                <div className="form-group">
+                  <input type="password" className="form-control" name="password" ref="password" id="password" placeholder="Password" onBlur={((e) => this.handleChange(e))} />
+                  <span className="error hide">Please Enter Valid Password </span>
+                </div>
+                <button type="button" className="btn btn-default btn-login" onClick={this.handleloginSubmit.bind(this)}>Login</button>
+              </form>
+              <p className="register_new_error hide error" ref="reg_error">Email Not Found Please Register</p>
+              <p className="register_link"><span>New User?</span><span onClick={this.handleClickRegister.bind(this)}>Register</span></p>
+            </div>
+            <div ref="registerBlock" id="register_block">
+                <RegisterForm />
+            </div>
           </div>
         </div>
       </div>
