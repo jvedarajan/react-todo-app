@@ -21,7 +21,6 @@ getTodayTask=()=>{
     return Object.keys(userMenus).map(function (menuObj, ind) {
           const addedLists = userMenus[menuObj].added_lists;
           if (addedLists.length > 0) {
-            
               return addedLists.map(function (item, i) {
                   const createdDateTime = item.created_at;
                   const createdDateArr = createdDateTime.split(' ');

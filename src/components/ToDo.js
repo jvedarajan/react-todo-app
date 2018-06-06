@@ -29,20 +29,20 @@ class ToDo extends Component {
     }
     getTodoLists = (lists, todoName) => {
         let i = 0;
-        let disabledClass = '';
         const _this = this ;
-        let addChecked = '';
         return lists.map((anObjectMapped, index) => {
             i++;
+            let disabledClass = '';
             if(anObjectMapped.status==="completed"){
                 disabledClass = "disabled";
             }
+            let addChecked = '';
             if(anObjectMapped.status==="completed"){
-                addChecked = "checked";
-            }
+                addChecked = { ["checked"]: true };
+           }
             return (
                     <li className="list-group-item no_border" key={todoName + anObjectMapped.title}>
-                    <label className="checkobox todo">{anObjectMapped.title}<input type="checkbox" data-task={todoName} value={index} onChange={((e) => _this.handleCheckboxTick(e))} checked={addChecked}/><span className="checkmark"></span>
+                    <label className="checkobox todo">{anObjectMapped.title}<input type="checkbox" data-task={todoName} value={index} onChange={((e) => _this.handleCheckboxTick(e))} { ...addChecked }/><span className="checkmark"></span>
                     <span className={disabledClass+" edit_lists todo"} onClick={this.handleEditListName(todoName, index)}><i className="fa fa-pencil-square-o" aria-hidden="true"></i></span> <span className="created_listtime">{anObjectMapped.created_at}</span>   
                     </label></li>
             );
