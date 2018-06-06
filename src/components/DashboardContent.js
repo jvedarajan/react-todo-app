@@ -4,20 +4,20 @@ class DashboardContent extends Component {
     constructor(props) {
         super(props);
         this.state = { completedTask: 0, pendingTask: 0 };
-        this.taskStatusCounts();
+        this.getTaskStatusCounts();
     }
-    taskStatusCounts= ()=>{
+    getTaskStatusCounts= ()=>{
         const uMenus = this.props.states.menus;
         const _thisState = this ;
        return  Object.keys(uMenus).map(function (menuObj, ind) {
                 const addedLists = uMenus[menuObj].added_lists;
-                return _thisState.findTaskCounts(addedLists);
+                return _thisState.getTaskCounts(addedLists);
         });
     }
-    findTaskCounts = (taskLists)=>{
+    getTaskCounts = (taskLists)=>{
         if (taskLists.length > 0) {
             for(var row in taskLists){
-               var status = taskLists[row].status ;
+               const status = taskLists[row].status ;
                if(status==="pending"){
                   this.state.pendingTask++;
                }
@@ -27,10 +27,10 @@ class DashboardContent extends Component {
             }
         } 
     }
-    loadTaskDetails = ()=>{
+    getTaskDetails = ()=>{
         const getUserMenus = this.props.states.menus;
-        var _this = this;
-        var listNo = 0;
+        const _this = this;
+        let listNo = 0;
         return Object.keys(getUserMenus).map(function (obj, i) {
             const addedLists = getUserMenus[obj].added_lists;
             const addedListsCount = addedLists.length;
@@ -38,13 +38,13 @@ class DashboardContent extends Component {
                 if (getUserMenus[obj].menuname !== 'My-Day') {
                    return addedLists.map(function(item, j){
                          listNo++ ;
-                        return (<tr key={listNo}><td>{listNo}</td><td>{addedLists[j].title}</td><td>{getUserMenus[obj].menuname}</td><td>{addedLists[j].status}</td><td>{_this.dateFormatChange(addedLists[j].created_at)}</td><td>{_this.dateFormatChange(addedLists[j].completed_at)}</td></tr>);
+                        return (<tr key={listNo}><td>{listNo}</td><td>{addedLists[j].title}</td><td>{getUserMenus[obj].menuname}</td><td>{addedLists[j].status}</td><td>{_this.getDateFormatChange(addedLists[j].created_at)}</td><td>{_this.getDateFormatChange(addedLists[j].completed_at)}</td></tr>);
                     });
                 }
             }
         });
     }
-    dateFormatChange = (date)=>{
+    getDateFormatChange = (date)=>{
         if(date!=='' && date!==undefined && date!==null){
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const dateArr     = date.split(' ');
@@ -66,7 +66,6 @@ class DashboardContent extends Component {
                 </div>
                     </div>
                     <div className="row padding_none">
-                        
                         <div className="col-sm-12 col-md-12 col-lg-12 card">
                             <div className="table-responsive">
                             <table className="table">
@@ -81,7 +80,7 @@ class DashboardContent extends Component {
                                           </tr>
                                         </thead>
                                         <tbody>
-                                            {this.loadTaskDetails()}
+                                            {this.getTaskDetails()}
                                         </tbody>
                               </table>
                             </div>

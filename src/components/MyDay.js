@@ -2,28 +2,26 @@ import React, { Component } from "react";
 class MyDay extends Component {
   constructor(props) {
     super(props);
-    this.showTodayDate();
-
+    this.state = {menus: this.props.states.menus  };
 }
-showTodayDate=()=>{
+getTodayDate=()=>{
   const todayDate = this.props.states.datetime;
   const dateArr     = todayDate.split(' ');
   return  dateArr[1].slice(0, -1)+'-'+dateArr[0]+'-'+dateArr[2];
 }
-loadTodayTask=()=>{
+getTodayTask=()=>{
   const _this = this ;
     const getDate = _this.props.states.datetime ;
-    const userMenus = _this.props.states.menus;
-    var listCount = 0 ;
+    const userMenus = _this.state.menus;
+    let listCount = 0 ;
     const dateArr     = getDate.split(' ');
     const day = dateArr[1].slice(0, -1) ;
     const month = dateArr[0] ;
     const year  = dateArr[2] ;
-    
     return Object.keys(userMenus).map(function (menuObj, ind) {
           const addedLists = userMenus[menuObj].added_lists;
           if (addedLists.length > 0) {
-            var addChecked = '';
+            
               return addedLists.map(function (item, i) {
                   const createdDateTime = item.created_at;
                   const createdDateArr = createdDateTime.split(' ');
@@ -31,11 +29,12 @@ loadTodayTask=()=>{
                   const cmonth = createdDateArr[0] ;
                   const cyear  = createdDateArr[2] ;
                   if(day===cday && month===cmonth && year===cyear){
+                    let addChecked = '';
                     if(item.status==="completed"){
-                        addChecked = "checked";
+                         addChecked = { ["checked"]: true };
                     }
                     return (<li className="list-group-item" key={i}>
-                    <label className="checkobox">{item.title}<input type="checkbox" data-task={menuObj} value={i} onChange={((e) => _this.handleCheckboxTick(e))} checked={addChecked}/><span className="checkmark"></span>
+                    <label className="checkobox">{item.title}<input type="checkbox" data-task={menuObj} value={i} onChange={((e) => _this.handleCheckboxTick(e))} { ...addChecked } /><span className="checkmark"></span>
                         <span className={item.status+" task_status"}>{item.status}</span>
                         <p className="task_desc">{menuObj}</p>
                     </label></li>);
@@ -54,7 +53,7 @@ handleCheckboxTick = (clickElem)=>{
   const val = clickElem.target.value;
   const taskSelected = clickElem.target.getAttribute("data-task") ;
   const userInformation = this.props.states.allUsersInfo;
-  var setStatus,setCompletedTime ;
+  let setStatus,setCompletedTime ;
   if(clickElem.target.checked){
     setStatus = "completed";
     setCompletedTime = getDate;
@@ -62,16 +61,18 @@ handleCheckboxTick = (clickElem)=>{
     setStatus = "pending";
     setCompletedTime =  "";
   }
-  const userMenus = this.props.states.menus;
-for (var a in userMenus) {
-  if (userMenus[a].menuname === taskSelected) {
-      userMenus[a].added_lists[val].status = setStatus;
-      userMenus[a].added_lists[val].completed_at = setCompletedTime;
-          break;
+  const userMenus = this.state.menus;
+  const selectedTodoTask = userMenus[taskSelected];
+//for (let a in userMenus) {
+  if (selectedTodoTask.menuname === taskSelected) {
+    selectedTodoTask.added_lists[val].status = setStatus;
+    selectedTodoTask.added_lists[val].completed_at = setCompletedTime;
+       //   break;
   }
-}
+//}
 localStorage.setItem('userInfo', JSON.stringify(userInformation));
-this.props.states.menus = userMenus;
+//this.props.states.menus = userMenus;
+this.setState({ menus: userMenus });
 }
   render() {
     return (
@@ -81,10 +82,10 @@ this.props.states.menus = userMenus;
         </div>
         <div className="col-sm-12 offset-md-2 offset-lg-2 col-md-6 col-lg-6">
                     <div className="card todo_cards default myday_todo">
-                        <div className="card-header"> Today Todos <span>{this.showTodayDate()}</span></div>
+                        <div className="card-header"> Today Todos <span>{this.getTodayDate()}</span></div>
                         <div className="card-body">
                             <ul className="list-group list-group-flush">
-                              {this.loadTodayTask()}
+                              {this.getTodayTask()}
                             </ul>
                         </div>
                     </div>

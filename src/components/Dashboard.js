@@ -18,29 +18,31 @@ const newListAdded = [];
 class Dashboard extends React.Component {
         constructor(props) {
                 super();
-                var loggedUserEmail = localStorage.getItem('loggedUser');
-               var  userRowIndex = '';
-               this.state = { redirect: false};
-               
-                if(loggedUserEmail!==undefined && loggedUserEmail!==null && loggedUserEmail!==''){
-                const userInformation = JSON.parse(localStorage.getItem('userInfo'));
-                if (userInformation !== null && userInformation !== undefined) {
-                          userRowIndex = localStorage.getItem('userRow');
-                        const usersRow = userInformation.users;
-                        var userMenusStorage = usersRow[userRowIndex].userMenus;
-                        var userName = usersRow[userRowIndex].userName;
-                } else {
-                        userMenusStorage = '';
-                }
-                this.state = { datetime: this._loadCurrentTime(), menus: userMenusStorage, userRowIndex: userRowIndex, allUsersInfo: userInformation, loggedUser: loggedUserEmail,loggedUserName:userName };
-                this._getTime();
-                this._loadCustomTasks();
-          }else{
-                this.setState({ redirect: true });
-                window.location.href = "http://localhost:3000";  
-          }
+                this.state = { redirect: false};
+                this.checkUserLogin();
         }
-        _loadCustomTasks = () =>{
+        checkUserLogin = () =>{
+                const loggedUserEmail = localStorage.getItem('loggedUser');
+                 if(loggedUserEmail!==undefined && loggedUserEmail!==null && loggedUserEmail!==''){
+                 const userInformation = JSON.parse(localStorage.getItem('userInfo'));
+                 if (userInformation !== null && userInformation !== undefined) {
+                        const userRowIndex = localStorage.getItem('userRow');
+                         const usersRow = userInformation.users;
+                         const userMenusStorage = usersRow[userRowIndex].userMenus;
+                         const userName = usersRow[userRowIndex].userName;
+                         this.state = { datetime: this.getCurrentTime(), menus: userMenusStorage, userRowIndex: userRowIndex, allUsersInfo: userInformation, loggedUser: loggedUserEmail,loggedUserName:userName };
+                        this.getTime();
+                        this.getCustomTasks();
+                 }else{
+                        this.setState({ redirect: true });
+                        window.location.href = "http://localhost:3000"; 
+                 }   
+           }else{
+                 this.setState({ redirect: true });
+                 window.location.href = "http://localhost:3000";  
+           }
+        }
+        getCustomTasks = () =>{
              const getMenus = this.state.menus ;   
              Object.keys(getMenus).map(function (menuObject, ind) {
                 if (getMenus[menuObject].type === 'custom') {
@@ -48,18 +50,18 @@ class Dashboard extends React.Component {
                   }
                 });
         }
-        _getTime = () => {
-                this.setState({ datetime: this._loadCurrentTime() });
-                setTimeout(this._getTime.bind(this), 30000);
+        getTime = () => {
+                this.setState({ datetime: this.getCurrentTime() });
+                setTimeout(this.getTime.bind(this), 30000);
         }
-        _loadCurrentTime = () => {
+        getCurrentTime = () => {
                 const today = new Date();
-                var h = today.getHours();
-                var m = today.getMinutes();
+                let h = today.getHours();
+                let m = today.getMinutes();
                 const date = today.getDate();
                 const month = today.getMonth();
                 const year = today.getFullYear();
-                var setPeriod = "AM";
+                let setPeriod = "AM";
                 m = this.checkTime(m);
                 if (h > 11) {
                         setPeriod = "PM";
@@ -82,14 +84,14 @@ class Dashboard extends React.Component {
                 return returnFlag;
         }
         /* Display List of Menu Items*/
-        displayData = () => {
+        getMenuData = () => {
                 const userMenus = this.state.menus;
                 const userMenusArr = Object.keys(userMenus).map(function (i) {
                         return userMenus[i];
                 });
                 return userMenusArr.map(menus => {
                         const listsLength = menus.added_lists.length;
-                        var countShow;
+                        let countShow;
                         if (listsLength === 0) {
                                 countShow = '';
                         } else {
@@ -116,7 +118,7 @@ class Dashboard extends React.Component {
                                 const createJSON = {
                                         "menuname": newList, "iconclass": "fa fa-asterisk", "added_lists": [],
                                         "display_order": Object.keys(userMenus).length + 1,
-                                        "created_at": this._loadCurrentTime(),
+                                        "created_at": this.getCurrentTime(),
                                         "type": "custom",
                                         "path": "/" + newList.toLowerCase(),
                                         "component": "TasksComponent"
@@ -134,19 +136,19 @@ class Dashboard extends React.Component {
                                 usersRow[userRowIndex].userMenus = newMenusAdd;
                                 localStorage.setItem('userInfo', JSON.stringify(userInformation));
                                 this.setState({ menus: newMenusAdd });
-                                this.displayData();
+                                this.getMenuData();
                         }
                 } else {
                         this.refs.addNewListName.value = '';
                 }
         }
-        taskModalClose = () => {
+        handleClickCloseModal = () => {
                 const modal = this.refs.modalTask;
                 modal.style.display = "none";
                 const modal2 = this.refs.modalDeleteTask;
                 modal2.style.display = "none";
         }
-        submitTask = () => {
+        handleSubmitTask = () => {
                 const taskIPElem = this.refs.task_name;
                 const taskAction = this.refs.task_action.innerText;
                 const taskName = this.refs.task_name.value;
@@ -168,7 +170,7 @@ class Dashboard extends React.Component {
                         if (taskAction === "Add") {
                                 for (var k in menus) {
                                         if (menus[k].menuname === taskTodo) {
-                                                var createNewTask = { title: taskName, created_at: this._loadCurrentTime(),status:"pending",completed_at:"" };
+                                                var createNewTask = { title: taskName, created_at: this.getCurrentTime(),status:"pending",completed_at:"" };
                                                 menus[k].added_lists.push(createNewTask);
                                                 break;
                                         }
@@ -176,7 +178,7 @@ class Dashboard extends React.Component {
                         }
                         localStorage.setItem('userInfo', JSON.stringify(userInformation));
                         this.setState({ menus: menus });
-                        this.taskModalClose();
+                        this.handleClickCloseModal();
                 } else {
                         taskIPElem.classList.add('invalid');
                         taskIPElem.nextElementSibling.classList.remove('hide');
@@ -187,7 +189,7 @@ class Dashboard extends React.Component {
                 const componentMenus = currentStates.menus;
                 return Object.keys(componentMenus).map(function (menuObj, ind) {
                         if (componentMenus[menuObj].menuname !== '') {
-                                var Component = componentMenus[menuObj].component;
+                                let Component = componentMenus[menuObj].component;
                                 if (Component === "DashboardComponent") {
                                         Component = "DashboardContent";
                                 }
@@ -195,7 +197,7 @@ class Dashboard extends React.Component {
                         }
                 });
         }
-        checkInput = (event) => {
+        handleCheckInput = (event) => {
                 const taskInput = this.refs.task_name;
                 const taskInputVal = taskInput.value;
                 if (taskInputVal === "") {
@@ -206,7 +208,7 @@ class Dashboard extends React.Component {
                         taskInput.nextElementSibling.classList.add('hide');
                 }
         }
-        taskDelete = () =>{
+        handleTaskDelete = () =>{
                 const taskType = this.refs.delete_task_type.value;
                 const deleteIndex = this.refs.delete_task_index.value;
                 const menus = this.state.menus;
@@ -227,16 +229,15 @@ class Dashboard extends React.Component {
                 }
                 localStorage.setItem('userInfo', JSON.stringify(userInformation));
                 this.setState({ menus: menus });
-                this.taskModalClose();
+                this.handleClickCloseModal();
         }
-        clickLogout = ()=>{
-               ;
+        handleClickLogout = ()=>{
                 localStorage.removeItem('loggedUser');
                 localStorage.removeItem('userRow');
               //  return <Redirect to='/'/>; 
               window.location.href = "http://localhost:3000";
         }
-        showSideMenu = (elem) =>{
+        handleShowSideMenu = (elem) =>{
              const displayType =  this.refs.menu_icon.getAttribute("data-display") ; 
              if(displayType==="show"){
                 this.refs.side_nav.style.display = "block";  
@@ -262,7 +263,7 @@ class Dashboard extends React.Component {
                                         <div className="col-sm-2 col-md-2 col-lg-2 side_nav" ref="side_nav">
                                                 <ul>
                                                         <li><img src={userphoto} alt="logo" className="img-fluid user_photo menu" /><span>{this.state.loggedUserName}</span></li>
-                                                        {this.displayData()}
+                                                        {this.getMenuData()}
                                                         <li className="menu addnew" data-menu="addnew" onClick={((e) => this.handleAddNew(e))} id="newlist" ref="newlist"><i className="fa fa-plus" aria-hidden="true"></i><span className="d-none d-md-block">New List</span></li>
                                                         <li className="addlist hide" >
                                                                 <div className="input-group mb-3">
@@ -277,14 +278,14 @@ class Dashboard extends React.Component {
                                         <div className="col-sm-10 col-md-10 col-lg-10 content">
                                                 <div className="top_bg_image">
                                                          <div className="logout_section">
-                                                                <a onClick={() => this.clickLogout()}>LOGOUT</a>
+                                                                <a onClick={() => this.handleClickLogout()}>LOGOUT</a>
                                                         </div>
                                                         <div className="menu_bar d-none d-sm-block d-md-none d-block d-sm-none" ref="menu_bar">
-                                                                 <span onClick={((e) => this.showSideMenu(e))} data-display="show" ref="menu_icon"><i className="fa fa-bars" aria-hidden="true"></i></span>
+                                                                 <span onClick={((e) => this.handleShowSideMenu(e))} data-display="show" ref="menu_icon"><i className="fa fa-bars" aria-hidden="true"></i></span>
                                                         </div>
                                                         <div className="img_head">
                                                                 <h1 >My ToDo</h1>
-                                                                <p id="display_datetime"> {this._loadCurrentTime()}</p>
+                                                                <p id="display_datetime"> {this.getCurrentTime()}</p>
                                                         </div>
                                                 </div>
                                                 <div className="bottom_content">
@@ -308,8 +309,8 @@ class Dashboard extends React.Component {
                                         <div className="modal-dialog modal-md">
                                                 <div className="modal-content">
                                                         <div className="modal-header">
-                                                                <h5> <span id="show_task_type"></span></h5>
-                                                                <button type="button" className="close" ref="closeModal" data-dismiss="modal" aria-label="Close" onClick={() => this.taskModalClose()}>
+                                                                <h5> <span id="show_task_type" ref="showTaskType"></span></h5>
+                                                                <button type="button" className="close" ref="closeModal" data-dismiss="modal" aria-label="Close" onClick={() => this.handleClickCloseModal()}>
                                                                         <span aria-hidden="true">×</span>
                                                                 </button>
                                                         </div>
@@ -317,12 +318,12 @@ class Dashboard extends React.Component {
                                                                 <form >
                                                                         <div className="form-group">
                                                                                 <label><span id="task_action" ref="task_action"></span> Task</label>
-                                                                                <input type="text" className="form-control" ref="task_name" name="task_name" id="task_name" onChange={(e) => this.checkInput(e)} />
+                                                                                <input type="text" className="form-control" ref="task_name" name="task_name" id="task_name" onChange={(e) => this.handleCheckInput(e)} />
                                                                                 <span className="error hide">Enter valid Task min 10 chars</span>
                                                                         </div>
                                                                         <input type="hidden" id="task_type" name="task_type" ref="task_type" />
                                                                         <input type="hidden" id="edit_index" name="edit_index" ref="edit_index" />
-                                                                        <button type="button" className="btn btn-primary" id="btn-task" onClick={() => this.submitTask()}>Submit</button>
+                                                                        <button type="button" className="btn btn-primary" id="btn-task" onClick={() => this.handleSubmitTask()}>Submit</button>
                                                                 </form>
                                                         </div>
                                                 </div>
@@ -333,7 +334,7 @@ class Dashboard extends React.Component {
                                                 <div className="modal-content">
                                                         <div className="modal-header">
                                                                 <h5> Delete?</h5>
-                                                                <button type="button" className="close" ref="closeModal" data-dismiss="modal" aria-label="Close" onClick={() => this.taskModalClose()}>
+                                                                <button type="button" className="close" ref="closeModal" data-dismiss="modal" aria-label="Close" onClick={() => this.handleClickCloseModal()}>
                                                                         <span aria-hidden="true">×</span>
                                                                 </button>
                                                         </div>
@@ -344,10 +345,10 @@ class Dashboard extends React.Component {
                                                                                 <input type="hidden" id="delete_task_type" name="delete_task_type" ref="delete_task_type" />
                                                                                 <input type="hidden" id="delete_task_index" name="delete_task_index" ref="delete_task_index" />
                                                                                 <div className="col-md-6 col-lg-6">
-                                                                                        <button type="button" className="btn btn-info btn-cancel"  onClick={() => this.taskModalClose()}>Cancel</button> 
+                                                                                        <button type="button" className="btn btn-info btn-cancel"  onClick={() => this.handleClickCloseModal()}>Cancel</button> 
                                                                                 </div>
                                                                                 <div className="col-md-6 col-lg-6">
-                                                                                        <button type="button" className="btn btn-primary btn-delete"  onClick={() => this.taskDelete()}>Delete</button> 
+                                                                                        <button type="button" className="btn btn-primary btn-delete"  onClick={() => this.handleTaskDelete()}>Delete</button> 
                                                                                 </div>
                                                                      </div>
                                                                </div>

@@ -56,8 +56,7 @@ class RegisterForm extends Component {
         const pwdElement = this.refs.reg_password;
         const fnameElement = this.refs.first_name;
         const lnameElement = this.refs.last_name;
-        var flagSet = true;
-        console.log(fname);
+        let flagSet = true;
         if(password==="" && password.length<6){
             pwdElement.classList.add('invalid');
             pwdElement.nextElementSibling.classList.remove('hide');

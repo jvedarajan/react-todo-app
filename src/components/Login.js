@@ -33,7 +33,7 @@ class Login extends React.Component {
     const emailElement = this.refs.email;
     const pwdElement = this.refs.password;
     const checkEmailVal = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    var flag;
+    let flag;
     if (!checkEmailVal.test(email)) {
       emailElement.classList.add('invalid');
       emailElement.nextElementSibling.classList.remove('hide');
@@ -53,7 +53,7 @@ class Login extends React.Component {
       flag = true;
     }
     if (flag === true) {
-      var usersRow, userRowIndex;
+      let usersRow, userRowIndex;
      // var userInfoObj = { "userEmail": email, "userPassword": password, "loginStatus": 1, userMenus };
       if (userInformation !== null && userInformation !== undefined) {
         usersRow = userInformation.users;
@@ -93,9 +93,6 @@ class Login extends React.Component {
     formDiv.style.display = "none";
     const regBlock = this.refs.registerBlock;
     regBlock.style.display = "block";
-  }
-  componentWillMount = () => {
-
   }
   render() {
     return (
