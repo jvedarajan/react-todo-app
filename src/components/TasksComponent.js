@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 class TasksComponent extends Component {
-    constructor(props) {
-        super(props);
-    }
     getTaskLists = () => {
         const task = this.props.taskType;
         const userMenus = this.props.states.menus;
@@ -55,7 +52,7 @@ class TasksComponent extends Component {
                 <div className="content_title">
                     <h5>{this.props.taskType}</h5>
                 </div>
-                <div className="col-sm-12 offset-md-2 offset-lg-2 col-md-6 col-lg-6">
+                <div className="col-sm-12 offset-md-2  col-md-6">
                     <div className="card todo_cards default">
                         <div className="card-header">{this.props.taskType} Todo</div>
                         <div className="card-body">

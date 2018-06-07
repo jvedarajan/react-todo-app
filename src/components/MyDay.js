@@ -79,7 +79,7 @@ this.setState({ menus: userMenus });
         <div className="content_title">
           <h5>My Day</h5>
         </div>
-        <div className="col-sm-12 offset-md-2 offset-lg-2 col-md-6 col-lg-6">
+        <div className="col-sm-12 offset-md-2 col-md-6">
                     <div className="card todo_cards default myday_todo">
                         <div className="card-header"> Today Todos <span>{this.getTodayDate()}</span></div>
                         <div className="card-body">

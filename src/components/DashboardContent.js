@@ -1,11 +1,9 @@
 import React, { Component } from "react";
-
 class DashboardContent extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { completedTask: 0, pendingTask: 0 };
+    state = { completedTask: 0, pendingTask: 0 };
+    componentWillMount= ()=> {
         this.getTaskStatusCounts();
-    }
+   }
     getTaskStatusCounts= ()=>{
         const uMenus = this.props.states.menus;
         const _thisState = this ;
@@ -59,14 +57,14 @@ class DashboardContent extends Component {
                 <div className="content_title">
                     <h5>Dashboard</h5>
                 </div>
-                <div className="col-sm-12 col-md-9 col-lg-9 padding_none">
+                <div className="col-sm-12 col-md-9 padding_none">
                     <div className="dashboard_notification">
                         <div className="alert alert-info">
                             <strong>{this.state.completedTask+this.state.pendingTask}</strong> Todos assigned to you!.
                 </div>
                     </div>
                     <div className="row padding_none">
-                        <div className="col-sm-12 col-md-12 col-lg-12 card">
+                        <div className="col-sm-12 col-md-12 card">
                             <div className="table-responsive">
                             <table className="table">
                                         <thead>
@@ -88,7 +86,7 @@ class DashboardContent extends Component {
                        
                     </div>
                 </div>
-                <div className="col-sm-12 col-md-3 col-lg-3">
+                <div className="col-sm-12 col-md-3">
                     <div className="card dashboard_cards alert alert-primary sub">
                         <div className="card-body">
                             <h5>Task Completed</h5>

@@ -5,7 +5,6 @@ import React from 'react';
 //import { createStore, combineReducers, applyMiddleware } from 'redux';
 //import { routerMiddleware, push } from 'react-router-redux'
 import applogo from '../images/Todo-Pollo-logo.png';
-//var SHA256 = require("crypto-js/sha256");
 import userMenus from '../jsons/usermenus.json';
 import RegisterForm from "./RegisterForm";
 if (localStorage.getItem('userInfo') !== undefined) {
@@ -72,6 +71,7 @@ class Login extends React.Component {
             localStorage.setItem('loggedUser', email);
             localStorage.setItem('userRow', userRowIndex);
             this.props.history.push('/dashboard');
+            window.location.reload();
           }
         }
       }else{
@@ -98,7 +98,7 @@ class Login extends React.Component {
     return (
       <div className="container-fluid login-container">
         <div className="row">
-          <div className="col-sm-12 col-md-4 offset-md-4 offset-lg-4 login-banner">
+          <div className="col-sm-12 col-md-4 offset-md-4  login-banner">
             <div className="logo"> <img src={applogo} className="img-fluid justify-content-center app_logo" alt="logo" /></div>
             <div ref="loginBlock" id="login_block">
               <form>

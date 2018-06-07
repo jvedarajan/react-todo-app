@@ -2,7 +2,6 @@ import React from 'react';
 import userphoto from '../images/user_icon.png';
 import {  Route, BrowserRouter as HashRouter, NavLink,Switch,Router } from 'react-router-dom';
 //import { Redirect } from 'react-router'
-
 import DashboardContent from "./DashboardContent";
 import MyDay from "./MyDay";
 import ToDo from "./ToDo";
@@ -16,31 +15,12 @@ document.onclick = function () {
 }
 const newListAdded = [];
 class Dashboard extends React.Component {
-        constructor(props) {
-                super();
-                this.state = { redirect: false};
-                this.checkUserLogin();
-        }
-        checkUserLogin = () =>{
-                const loggedUserEmail = localStorage.getItem('loggedUser');
-                 if(loggedUserEmail!==undefined && loggedUserEmail!==null && loggedUserEmail!==''){
-                 const userInformation = JSON.parse(localStorage.getItem('userInfo'));
-                 if (userInformation !== null && userInformation !== undefined) {
-                        const userRowIndex = localStorage.getItem('userRow');
-                         const usersRow = userInformation.users;
-                         const userMenusStorage = usersRow[userRowIndex].userMenus;
-                         const userName = usersRow[userRowIndex].userName;
-                         this.state = { datetime: this.getCurrentTime(), menus: userMenusStorage, userRowIndex: userRowIndex, allUsersInfo: userInformation, loggedUser: loggedUserEmail,loggedUserName:userName };
-                        this.getTime();
-                        this.getCustomTasks();
-                 }else{
-                        this.setState({ redirect: true });
-                        window.location.href = "http://localhost:3000"; 
-                 }   
-           }else{
-                 this.setState({ redirect: true });
-                 window.location.href = "http://localhost:3000";  
-           }
+        state = {};
+        componentWillMount() {
+                const propsVals = this.props.states;
+                this.state = { datetime: this.getCurrentTime(), menus: propsVals.menus, userRowIndex: propsVals.userRowIndex, allUsersInfo: propsVals.allUsersInfo, loggedUser: propsVals.loggedUser,loggedUserName:propsVals.loggedUserName };
+                this.getCustomTasks();
+                this.getTime();
         }
         getCustomTasks = () =>{
              const getMenus = this.state.menus ;   
@@ -127,9 +107,6 @@ class Dashboard extends React.Component {
                                 newListAdded.push({ "path": "/" + newList.toLowerCase(),"component": "TasksComponent","task":newList});
                                 newlistElement.classList.remove('hide');
                                 newlistElement.nextSibling.classList.add('hide');
-                                /*   const fs = require('fs');
-                                   let data = JSON.stringify(createJSON);  
-                                   fs.writeFileSync(userMenus, data);  */
                                 const oldMenus = usersRow[userRowIndex].userMenus;
                                 const newMenusAdd = Object.assign({}, oldMenus, createMenuObj);
                                 delete usersRow[userRowIndex].userMenus;
@@ -155,25 +132,18 @@ class Dashboard extends React.Component {
                 const taskTodo = this.refs.task_type.value;
                 const menus = this.state.menus;
                 const userInformation = this.state.allUsersInfo;
+                const menusRow = menus[taskTodo];
                 if (taskName !== "" && taskName.length > 10) {
                         taskIPElem.classList.remove('invalid');
                         taskIPElem.nextElementSibling.classList.add('hide');
-                        if (taskAction === "Edit") {
-                                const taskIndex = this.refs.edit_index.value;
-                                for (var a in menus) {
-                                        if (menus[a].menuname === taskTodo) {
-                                                menus[a].added_lists[taskIndex].title = taskName;
-                                                break;
-                                        }
+                        if (menusRow.menuname === taskTodo) {
+                                if (taskAction === "Edit") {
+                                        const taskIndex = this.refs.edit_index.value;
+                                        menusRow.added_lists[taskIndex].title = taskName;
                                 }
-                        }
-                        if (taskAction === "Add") {
-                                for (var k in menus) {
-                                        if (menus[k].menuname === taskTodo) {
-                                                var createNewTask = { title: taskName, created_at: this.getCurrentTime(),status:"pending",completed_at:"" };
-                                                menus[k].added_lists.push(createNewTask);
-                                                break;
-                                        }
+                                if (taskAction === "Add") {
+                                        var createNewTask = { title: taskName, created_at: this.getCurrentTime(),status:"pending",completed_at:"" };
+                                        menusRow.added_lists.push(createNewTask);
                                 }
                         }
                         localStorage.setItem('userInfo', JSON.stringify(userInformation));
@@ -183,19 +153,6 @@ class Dashboard extends React.Component {
                         taskIPElem.classList.add('invalid');
                         taskIPElem.nextElementSibling.classList.remove('hide');
                 }
-        }
-        componentAdd = () => {
-                const currentStates = this.state;
-                const componentMenus = currentStates.menus;
-                return Object.keys(componentMenus).map(function (menuObj, ind) {
-                        if (componentMenus[menuObj].menuname !== '') {
-                                let Component = componentMenus[menuObj].component;
-                                if (Component === "DashboardComponent") {
-                                        Component = "DashboardContent";
-                                }
-                                return (<Route key={ind} path={componentMenus[menuObj].path} render={(props) => <Component {...props} states={currentStates} />} />);
-                        }
-                });
         }
         handleCheckInput = (event) => {
                 const taskInput = this.refs.task_name;
@@ -260,7 +217,7 @@ class Dashboard extends React.Component {
                 return (<HashRouter>
                         <div className="container-fluid dashboard-container">
                                 <div className="row">
-                                        <div className="col-sm-2 col-md-2 col-lg-2 side_nav" ref="side_nav">
+                                        <div className="col-sm-2 col-md-2  side_nav" ref="side_nav">
                                                 <ul>
                                                         <li><img src={userphoto} alt="logo" className="img-fluid user_photo menu" /><span>{this.state.loggedUserName}</span></li>
                                                         {this.getMenuData()}
@@ -275,7 +232,7 @@ class Dashboard extends React.Component {
                                                         </li>
                                                 </ul>
                                         </div>
-                                        <div className="col-sm-10 col-md-10 col-lg-10 content">
+                                        <div className="col-sm-10 col-md-10  content">
                                                 <div className="top_bg_image">
                                                          <div className="logout_section">
                                                                 <a onClick={() => this.handleClickLogout()}>LOGOUT</a>
@@ -340,14 +297,14 @@ class Dashboard extends React.Component {
                                                         </div>
                                                         <div className="modal-body">
                                                            <p>Are you sure want to Delete?</p>   
-                                                                <div className="offset-md-3 offset-lg-3 colm-md-9 col-lg-9 col-sm-12">
+                                                                <div className="offset-md-3  colm-md-9  col-sm-12">
                                                                      <div className="row">
                                                                                 <input type="hidden" id="delete_task_type" name="delete_task_type" ref="delete_task_type" />
                                                                                 <input type="hidden" id="delete_task_index" name="delete_task_index" ref="delete_task_index" />
-                                                                                <div className="col-md-6 col-lg-6">
+                                                                                <div className="col-md-6 ">
                                                                                         <button type="button" className="btn btn-info btn-cancel"  onClick={() => this.handleClickCloseModal()}>Cancel</button> 
                                                                                 </div>
-                                                                                <div className="col-md-6 col-lg-6">
+                                                                                <div className="col-md-6 ">
                                                                                         <button type="button" className="btn btn-primary btn-delete"  onClick={() => this.handleTaskDelete()}>Delete</button> 
                                                                                 </div>
                                                                      </div>

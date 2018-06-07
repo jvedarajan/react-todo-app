@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 class ToDo extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { notficationCount: 0,menus: this.props.states.menus  };
-    }
+    state = { notficationCount: 0,menus: this.props.states.menus  };
     getTodos = () => {
         const getUserMenus = this.state.menus;
         let listCounts = 0;
@@ -48,7 +45,7 @@ class ToDo extends Component {
             );
         })
     }
-    handleCheckboxTick = (clickElem)=>{
+    handleCheckboxTick = clickElem=>{
         const getDate  = this.props.states.datetime ;
         const val     = clickElem.target.value;
         const taskSelected = clickElem.target.getAttribute("data-task") ;
@@ -151,7 +148,7 @@ class ToDo extends Component {
                 <div className="content_title">
                     <h5>To Do</h5>
                 </div>
-                <div className="col-sm-12 offset-md-2 offset-lg-2 col-md-6 col-lg-6">
+                <div className="col-sm-12 offset-md-2 col-md-6">
                     {this.getTodoNotification(this.props.states.menus)}
                     {this.getTodos()}
                 </div>
