@@ -13,7 +13,7 @@ class TasksComponent extends Component {
                         if(item.status==="completed"){
                             disabledClass = "disabled";
                         }
-                        return (<li className="list-group-item" key={i}><span className={disabledClass+" edit_lists"} onClick={() => _this.clickAddEditTask(item.title, 'Edit', i)}><i className="fa fa-pencil-square-o" aria-hidden="true"></i></span><span className= {disabledClass+" delete_lists"} onClick={() => _this.clickDelete(task,i)}><i className="fa fa-trash-o" aria-hidden="true"></i></span><span>{item.title}</span> <span className="created_listtime">{item.created_at}</span> 
+                        return (<li className="list-group-item" key={i}><span className={disabledClass+" edit_lists"} data-row-id={item.id} onClick={() => _this.clickAddEditTask(item.title, 'Edit', i,item.id)}><i className="fa fa-pencil-square-o" aria-hidden="true"></i></span><span className= {disabledClass+" delete_lists"} onClick={() => _this.clickDelete(task,i,item.id)}><i className="fa fa-trash-o" aria-hidden="true"></i></span><span>{item.title}</span> <span className="created_listtime">{item.created_at}</span> 
                         <p key={i} className={item.status+" task_status"}>{item.status}</p></li>);
                     });
                 } else {
@@ -22,7 +22,7 @@ class TasksComponent extends Component {
             }
         });
     }
-    clickAddEditTask = (val, action, rowIndex) => {
+    clickAddEditTask = (val, action, rowIndex,id) => {
         const modal = document.getElementById("modalTask");
         let setVal;
         modal.style.display = "block";
@@ -38,12 +38,14 @@ class TasksComponent extends Component {
         }
         document.getElementById("task_name").value = setVal;
         document.getElementById("edit_index").value = rowIndex;
+        document.getElementById("edit_row").value = id;
     }
-    clickDelete = (taskName,rowIndex) => {
+    clickDelete = (taskName,rowIndex,rowID) => {
         const modal = document.getElementById("modalDeleteTask");
         modal.style.display = "block";
         document.getElementById("delete_task_type").value = taskName;
         document.getElementById("delete_task_index").value = rowIndex;
+        document.getElementById("delete_task_row").value = rowID;
     }
 
     render() {
@@ -58,7 +60,7 @@ class TasksComponent extends Component {
                         <div className="card-body">
                             <ul className="list-group list-group-flush">
                                 {this.getTaskLists()}
-                                <li className="list-group-item"><span>Add To-Do in Lists</span><button type="button" className="btn btn-primary add-task-btn" onClick={() => this.clickAddEditTask('', 'Add', -1)}><i className="fa fa-plus" aria-hidden="true"></i></button></li>
+                                <li className="list-group-item"><span>Add To-Do in Lists</span><button type="button" className="btn btn-primary add-task-btn" onClick={() => this.clickAddEditTask('', 'Add', -1,-1)}><i className="fa fa-plus" aria-hidden="true"></i></button></li>
                             </ul>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import userphoto from '../images/user_icon.png';
-import {  Route, BrowserRouter as HashRouter, NavLink,Switch,Router } from 'react-router-dom';
+import { Route, BrowserRouter as HashRouter, NavLink, Switch, Router } from 'react-router-dom';
 //import { Redirect } from 'react-router'
 import DashboardContent from "./DashboardContent";
 import MyDay from "./MyDay";
@@ -15,51 +15,62 @@ document.onclick = function () {
 }
 const newListAdded = [];
 class Dashboard extends React.Component {
-        state = {};
-        componentWillMount() {
+        constructor(props){
+                super(props);
                 const propsVals = this.props.states;
-                this.state = { datetime: this.getCurrentTime(), menus: propsVals.menus, userRowIndex: propsVals.userRowIndex, allUsersInfo: propsVals.allUsersInfo, loggedUser: propsVals.loggedUser,loggedUserName:propsVals.loggedUserName };
-                this.getCustomTasks();
-                this.getTime();
+                this.state = { datetime: this.getCurrentTime(),datetime2: this.getCurrentTime('db'), menus: propsVals.menus, userRowIndex: propsVals.userRowIndex, allUsersInfo: propsVals.allUsersInfo, loggedUser: propsVals.loggedUser, loggedUserName: propsVals.loggedUserName };
+              } 
+        state = {};
+        componentWillMount  =() =>{ 
+                const propsVals = this.props.states;
+                // this.getCustomTasks();
+                this.callApigetCustomMenus(propsVals.userRowIndex);
+                //this.getTime();
         }
-        getCustomTasks = () =>{
-             const getMenus = this.state.menus ;   
-             Object.keys(getMenus).map(function (menuObject, ind) {
-                if (getMenus[menuObject].type === 'custom') {
-                        newListAdded.push({ "path": "/" + getMenus[menuObject].menuname.toLowerCase(),"component": "TasksComponent","task":getMenus[menuObject].menuname});
-                  }
+        getCustomTasks = () => {
+                const getMenus = this.state.menus;
+                Object.keys(getMenus).map(function (menuObject, ind) {
+                        if (getMenus[menuObject].type === 'custom') {
+                                newListAdded.push({ "path": "/" + getMenus[menuObject].menuname.toLowerCase(), "component": "TasksComponent", "task": getMenus[menuObject].menuname });
+                        }
                 });
         }
         getTime = () => {
                 this.setState({ datetime: this.getCurrentTime() });
                 setTimeout(this.getTime.bind(this), 30000);
         }
-        getCurrentTime = () => {
+        getCurrentTime = (passdb) => {
                 const today = new Date();
-                let h = today.getHours();
-                let m = today.getMinutes();
+                let h = this.checkTime(today.getHours());
+                const m = this.checkTime(today.getMinutes());
+                const s = this.checkTime(today.getSeconds());
                 const date = today.getDate();
                 const month = today.getMonth();
                 const year = today.getFullYear();
-                let setPeriod = "AM";
-                m = this.checkTime(m);
-                if (h > 11) {
-                        setPeriod = "PM";
-                        if (h !== 12) {
-                                h = h - 12;
+                if (passdb) {
+                        const currentDateTime = year + "-" + month+1 + "-" + date + " " + h + ":" + m + ":" + s;
+                        return currentDateTime;
+                } else {
+                        let setPeriod = "AM";
+                        if (h > 11) {
+                                setPeriod = "PM";
+                                if (h !== 12) {
+                                        h = h - 12;
+                                }
                         }
+                        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        const displaydatetime = months[month] + " " + date + ", " + year + "  " + h + ":" + m + "  " + setPeriod;
+                        return displaydatetime;
                 }
-                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                const displaydatetime = months[month] + " " + date + ", " + year + "  " + h + ":" + m + "  " + setPeriod;
-                return displaydatetime;
+
         }
-        checkTime=(i)=>{
+        checkTime = (i) => {
                 if (i < 10) {
                         i = "0" + i;
                 }
                 return i;
         }
-        hasClass = (element, cls)=> {
+        hasClass = (element, cls) => {
                 const returnFlag = (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
                 return returnFlag;
         }
@@ -77,14 +88,14 @@ class Dashboard extends React.Component {
                         } else {
                                 countShow = listsLength;
                         }
-                        return <li key={menus.display_order} className="menu" data-menu={menus.menuname}><i className={menus.iconclass} aria-hidden="true"></i>   <NavLink to={menus.path}><span className="menu_itemname">{menus.menuname}</span> <span className="menu_itemcount">{countShow}</span></NavLink></li>;
+                        return <li key={menus.display_order} className="menu" data-menu={menus.menuname} data-display={menus.display_order}><i className={menus.iconclass} aria-hidden="true"></i>   <NavLink to={menus.path}><span className="menu_itemname">{menus.menuname}</span> <span className="menu_itemcount">{countShow}</span></NavLink></li>;
                 });
         }
         handleAddNew = (e) => {
-                const userRowIndex = this.state.userRowIndex;
-                const userMenus = this.state.menus;
-                const userInformation = this.state.allUsersInfo;
-                const usersRow = this.state.allUsersInfo.users;
+                /* const userRowIndex = this.state.userRowIndex;
+                 const userMenus = this.state.menus;
+                 const userInformation = this.state.allUsersInfo;
+                 const usersRow = this.state.allUsersInfo.users;*/
                 const newlistElement = this.refs.newlist;
                 newlistElement.classList.add('hide');
                 newlistElement.nextSibling.classList.remove('hide');
@@ -93,27 +104,28 @@ class Dashboard extends React.Component {
                 if (checkClickAddNew) {
                         const newList = this.refs.addNewListName.value.trim();
                         if (newList !== '') {
-                                const key = newList;
-                                const createMenuObj = {};
-                                const createJSON = {
-                                        "menuname": newList, "iconclass": "fa fa-asterisk", "added_lists": [],
-                                        "display_order": Object.keys(userMenus).length + 1,
-                                        "created_at": this.getCurrentTime(),
-                                        "type": "custom",
-                                        "path": "/" + newList.toLowerCase(),
-                                        "component": "TasksComponent"
-                                };
-                                createMenuObj[key] = createJSON;
-                                newListAdded.push({ "path": "/" + newList.toLowerCase(),"component": "TasksComponent","task":newList});
-                                newlistElement.classList.remove('hide');
-                                newlistElement.nextSibling.classList.add('hide');
-                                const oldMenus = usersRow[userRowIndex].userMenus;
-                                const newMenusAdd = Object.assign({}, oldMenus, createMenuObj);
-                                delete usersRow[userRowIndex].userMenus;
-                                usersRow[userRowIndex].userMenus = newMenusAdd;
-                                localStorage.setItem('userInfo', JSON.stringify(userInformation));
-                                this.setState({ menus: newMenusAdd });
-                                this.getMenuData();
+                                this.callApiAddMenuTask(newList, newlistElement);
+                                /*  const key = newList;
+                                  const createMenuObj = {};
+                                  const createJSON = {
+                                          "menuname": newList, "iconclass": "fa fa-asterisk", "added_lists": [],
+                                          "display_order": Object.keys(userMenus).length + 1,
+                                          "created_at": this.getCurrentTime(),
+                                          "type": "custom",
+                                          "path": "/" + newList.toLowerCase(),
+                                          "component": "TasksComponent"
+                                  };
+                                  createMenuObj[key] = createJSON;
+                                  newListAdded.push({ "path": "/" + newList.toLowerCase(),"component": "TasksComponent","task":newList});
+                                  newlistElement.classList.remove('hide');
+                                  newlistElement.nextSibling.classList.add('hide');
+                                  const oldMenus = usersRow[userRowIndex].userMenus;
+                                  const newMenusAdd = Object.assign({}, oldMenus, createMenuObj);
+                                  delete usersRow[userRowIndex].userMenus;
+                                  usersRow[userRowIndex].userMenus = newMenusAdd;
+                                  localStorage.setItem('userInfo', JSON.stringify(userInformation));
+                                  this.setState({ menus: newMenusAdd });
+                                  this.getMenuData();*/
                         }
                 } else {
                         this.refs.addNewListName.value = '';
@@ -131,24 +143,26 @@ class Dashboard extends React.Component {
                 const taskName = this.refs.task_name.value;
                 const taskTodo = this.refs.task_type.value;
                 const menus = this.state.menus;
-                const userInformation = this.state.allUsersInfo;
+                const taskIndex = this.refs.edit_index.value;
+                const taskRow = this.refs.edit_row.value;
+                //  const userInformation = this.state.allUsersInfo;
                 const menusRow = menus[taskTodo];
                 if (taskName !== "" && taskName.length > 10) {
                         taskIPElem.classList.remove('invalid');
                         taskIPElem.nextElementSibling.classList.add('hide');
                         if (menusRow.menuname === taskTodo) {
                                 if (taskAction === "Edit") {
-                                        const taskIndex = this.refs.edit_index.value;
                                         menusRow.added_lists[taskIndex].title = taskName;
                                 }
                                 if (taskAction === "Add") {
-                                        var createNewTask = { title: taskName, created_at: this.getCurrentTime(),status:"pending",completed_at:"" };
+                                        const createNewTask = { title: taskName, created_at: this.getCurrentTime(), status: "pending", completed_at: "" };
                                         menusRow.added_lists.push(createNewTask);
                                 }
                         }
-                        localStorage.setItem('userInfo', JSON.stringify(userInformation));
+                        // localStorage.setItem('userInfo', JSON.stringify(userInformation));
+                        this.callApiAddEditTodo(taskTodo, taskName,taskAction,taskRow);
                         this.setState({ menus: menus });
-                        this.handleClickCloseModal();
+                        //   this.handleClickCloseModal();
                 } else {
                         taskIPElem.classList.add('invalid');
                         taskIPElem.nextElementSibling.classList.remove('hide');
@@ -165,54 +179,201 @@ class Dashboard extends React.Component {
                         taskInput.nextElementSibling.classList.add('hide');
                 }
         }
-        handleTaskDelete = () =>{
+        handleTaskDelete = () => {
                 const taskType = this.refs.delete_task_type.value;
                 const deleteIndex = this.refs.delete_task_index.value;
-                const menus = this.state.menus;
-                const userInformation = this.state.allUsersInfo;
-                for (var a in menus) {
-                        if (menus[a].menuname === taskType) {
-                                var lists = menus[a].added_lists ;
-                                var newArr = [] ;
-                                for(var i=0;i<lists.length;i++){
-                                   if(i!==deleteIndex){
-                                        newArr.push(lists[i]);
-                                   } 
+                const deleteRow = this.refs.delete_task_row.value;
+               const menus = this.state.menus;
+               // const userInformation = this.state.allUsersInfo;
+                                var lists = menus[taskType].added_lists;
+                                var newArr = [];
+                                for (var i = 0; i < lists.length; i++) {
+                                        if (i !== deleteIndex) {
+                                                newArr.push(lists[i]);
+                                        }
                                 }
-                                delete menus[a].added_lists;
-                                menus[a].added_lists = newArr ;
-                                break;
-                        }
-                }
-                localStorage.setItem('userInfo', JSON.stringify(userInformation));
+                                delete menus[taskType].added_lists;
+                                menus[taskType].added_lists = newArr;
+             //   localStorage.setItem('userInfo', JSON.stringify(userInformation));
+                this.callApiDeleteTodo(taskType,deleteRow,deleteIndex);  
                 this.setState({ menus: menus });
-                this.handleClickCloseModal();
         }
-        handleClickLogout = ()=>{
+        handleClickLogout = () => {
                 localStorage.removeItem('loggedUser');
                 localStorage.removeItem('userRow');
-              //  return <Redirect to='/'/>; 
-              window.location.href = "http://localhost:3000";
+                //  return <Redirect to='/'/>; 
+                window.location.href = "http://localhost:3000";
         }
-        handleShowSideMenu = (elem) =>{
-             const displayType =  this.refs.menu_icon.getAttribute("data-display") ; 
-             if(displayType==="show"){
-                this.refs.side_nav.style.display = "block";  
-                this.refs.menu_bar.style.left = "120px"; 
-                this.refs.menu_icon.setAttribute('data-display', 'hide');
-             }else{
-                this.refs.side_nav.style.display = "none";  
-                this.refs.menu_bar.style.left = "10px"; 
-                this.refs.menu_icon.setAttribute('data-display', 'show');    
-             }
+        handleShowSideMenu = (elem) => {
+                const displayType = this.refs.menu_icon.getAttribute("data-display");
+                if (displayType === "show") {
+                        this.refs.side_nav.style.display = "block";
+                        this.refs.menu_bar.style.left = "120px";
+                        this.refs.menu_icon.setAttribute('data-display', 'hide');
+                } else {
+                        this.refs.side_nav.style.display = "none";
+                        this.refs.menu_bar.style.left = "10px";
+                        this.refs.menu_icon.setAttribute('data-display', 'show');
+                }
+        }
+        /* Api call for user adding new menu in list*/
+        callApiAddMenuTask = async (newMenuName, ipelement) => {
+                const _this = this;
+                const userMenus = _this.state.menus;
+                const displayOrder = Object.keys(userMenus).length + 1;
+                const setPath = "/" + newMenuName.toLowerCase();
+                const response = await fetch('/api/addMenu',
+                        {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                        menu: newMenuName,
+                                        path: setPath,
+                                        user: _this.state.userRowIndex,
+                                        display_order: displayOrder,
+                                        created_at: _this.getCurrentTime('dbdateformat'),
+                                }),
+                                headers: { "Content-Type": "application/json" }
+                        });
+                const body = await response.json();
+                if (response.status !== 200) throw Error(body.message);
+                if (body.status === "OK") {
+                        const createJSON = {
+                                "menuname": newMenuName, "iconclass": "fa fa-asterisk", "added_lists": [],
+                                "display_order": displayOrder,
+                                "created_at": _this.getCurrentTime(),
+                                "type": "custom",
+                                "path": setPath,
+                                "component": "TasksComponent"
+                        };
+                        const key = newMenuName;
+                        const createMenuObj = {};
+                        createMenuObj[key] = createJSON;
+                        const newMenusAdd = Object.assign({}, userMenus, createMenuObj);
+                        _this.setState({ menus: newMenusAdd });
+                        ipelement.classList.remove('hide');
+                        ipelement.nextSibling.classList.add('hide');
+                        _this.getMenuData();
+
+                } else {
+                        alert("Error Occured Try again later");
+                }
+        }
+        /* get user's Custom Menus*/
+        callApigetCustomMenus = async (id) => {
+                const _this = this;
+                const response = await fetch('/api/getUserCustomMenus',
+                        {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                        user: id
+                                }),
+                                headers: { "Content-Type": "application/json" }
+                        });
+                const body = await response.json();
+                if (response.status !== 200) throw Error(body.message);
+                if (body.status === "OK") {
+                        const data = body.data;
+                        data.map(custommenus => {
+                                const menuName = custommenus.menuname;
+                                const getStateMenus = _this.state.menus;
+                                const createJSON = {
+                                        "menuname": menuName, "iconclass": "fa fa-asterisk", "added_lists": [],
+                                        "display_order": custommenus.menu_display_order,
+                                        "created_at": custommenus.created_at,
+                                        "type": "custom",
+                                        "path": custommenus.path,
+                                        "component": "TasksComponent"
+                                };
+                                const key = menuName;
+                                const createMenuObj = {};
+                                createMenuObj[key] = createJSON;
+                                const newMenusAdd = Object.assign({}, getStateMenus, createMenuObj);
+                                _this.setState({ menus: newMenusAdd });
+                        });
+                }
+                this.callApiGetTodoLists();
+        }
+        callApiAddEditTodo = async (taskTodo, taskName,taskAction,editID) => {
+                const _this = this;
+                const response = await fetch('/api/addEditTodo',
+                        {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                        user: _this.state.userRowIndex,
+                                        taskTodo: taskTodo,
+                                        taskName: taskName,
+                                        taskAction:taskAction,
+                                        created_at: _this.getCurrentTime('dbdateformat'),
+                                        editID:editID
+                                }),
+                                headers: { "Content-Type": "application/json" }
+                        });
+                const body = await response.json();
+                if (response.status !== 200) throw Error(body.message);
+                if (body.status === "OK") {
+                        _this.handleClickCloseModal();
+                        if(taskAction==="Add"){
+                               _this.refs.edit_row = body.data ;
+                               _this.refs.delete_task_row = body.data ;
+                        }
+                      
+                }
+        }
+        callApiDeleteTodo = async (taskTodo,rowId,deleteIndex) => {
+                const _this = this;
+                const response = await fetch('/api/deleteTodo',
+                        {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                        user: _this.state.userRowIndex,
+                                        taskTodo: taskTodo,
+                                        rowId:rowId
+                                }),
+                                headers: { "Content-Type": "application/json" }
+                        });
+                const body = await response.json();
+                if (response.status !== 200) throw Error(body.message);
+                if (body.status === "OK") {
+                        _this.handleClickCloseModal();
+                                 
+                }
+        }
+        callApiGetTodoLists = async () => {
+                const _this = this;
+                const response = await fetch('/api/getUserTodoLists',
+                        {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                        user: _this.state.userRowIndex
+                                }),
+                                headers: { "Content-Type": "application/json" }
+                        });
+                const body = await response.json();
+                if (response.status !== 200) throw Error(body.message);
+                if (body.status === "OK") {
+                        const getTodoLists = body.data;
+                        const userTodos = _this.state.menus;
+                        getTodoLists.map(todos => {
+                                const getTodoType = todos.todo_type;
+                                let status = todos.todo_status;
+                                if (status === 0) {
+                                    status = "pending";
+                                }else if(status===1){
+                                        status = "completed";    
+                                }
+                                const addTodoListObj = { "status": status, "title": todos.todo_name, "task": todos.todo_type, "created_at": todos.created_at,"id":todos.id };
+                                userTodos[getTodoType].added_lists.push(addTodoListObj);
+                        });
+                        _this.setState({ menus: userTodos });
+                }
         }
         render() {
                 //const renderComponentMenus = this.state.menus;
-               // const states = this.state;
-                const redirect  = this.state.redirect;
+                // const states = this.state;
+                const redirect = this.state.redirect;
                 if (redirect) {
-                       // return <Redirect to='/'/>;
-                       window.location.href = "http://localhost:3000";       
+                        // return <Redirect to='/'/>;
+                        window.location.href = "http://localhost:3000";
                 }
                 return (<HashRouter>
                         <div className="container-fluid dashboard-container">
@@ -234,11 +395,11 @@ class Dashboard extends React.Component {
                                         </div>
                                         <div className="col-sm-10 col-md-10  content">
                                                 <div className="top_bg_image">
-                                                         <div className="logout_section">
+                                                        <div className="logout_section">
                                                                 <a onClick={() => this.handleClickLogout()}>LOGOUT</a>
                                                         </div>
                                                         <div className="menu_bar d-none d-sm-block d-md-none d-block d-sm-none" ref="menu_bar">
-                                                                 <span onClick={((e) => this.handleShowSideMenu(e))} data-display="show" ref="menu_icon"><i className="fa fa-bars" aria-hidden="true"></i></span>
+                                                                <span onClick={((e) => this.handleShowSideMenu(e))} data-display="show" ref="menu_icon"><i className="fa fa-bars" aria-hidden="true"></i></span>
                                                         </div>
                                                         <div className="img_head">
                                                                 <h1 >My ToDo</h1>
@@ -255,9 +416,9 @@ class Dashboard extends React.Component {
                                                         <Route path="/family" render={(props) => <TasksComponent {...props} states={this.state} taskType='Family' />} />
                                                         <Route path="/travel" render={(props) => <TasksComponent {...props} states={this.state} taskType='Travel' />} />
                                                         <Switch>
-                                                        {newListAdded.map(route => (
-                                                                <Route key={route.path}  path={route.path} render={(props) => <TasksComponent {...props} states={this.state} taskType={route.task} />} />
-                                                        ))}
+                                                                {newListAdded.map(route => (
+                                                                        <Route key={route.path} path={route.path} render={(props) => <TasksComponent {...props} states={this.state} taskType={route.task} />} />
+                                                                ))}
                                                         </Switch>
                                                 </div>
                                         </div>
@@ -280,6 +441,7 @@ class Dashboard extends React.Component {
                                                                         </div>
                                                                         <input type="hidden" id="task_type" name="task_type" ref="task_type" />
                                                                         <input type="hidden" id="edit_index" name="edit_index" ref="edit_index" />
+                                                                        <input type="hidden" id="edit_row" name="edit_row" ref="edit_row" />
                                                                         <button type="button" className="btn btn-primary" id="btn-task" onClick={() => this.handleSubmitTask()}>Submit</button>
                                                                 </form>
                                                         </div>
@@ -296,19 +458,20 @@ class Dashboard extends React.Component {
                                                                 </button>
                                                         </div>
                                                         <div className="modal-body">
-                                                           <p>Are you sure want to Delete?</p>   
-                                                                <div className="offset-md-3  colm-md-9  col-sm-12">
-                                                                     <div className="row">
+                                                                <p>Are you sure want to Delete?</p>
+                                                                <div className="offset-md-3  col-md-9  col-sm-12">
+                                                                        <div className="row">
                                                                                 <input type="hidden" id="delete_task_type" name="delete_task_type" ref="delete_task_type" />
                                                                                 <input type="hidden" id="delete_task_index" name="delete_task_index" ref="delete_task_index" />
+                                                                                <input type="hidden" id="delete_task_row" name="delete_task_row" ref="delete_task_row" value="0" />
                                                                                 <div className="col-md-6 ">
-                                                                                        <button type="button" className="btn btn-info btn-cancel"  onClick={() => this.handleClickCloseModal()}>Cancel</button> 
+                                                                                        <button type="button" className="btn btn-info btn-cancel" onClick={() => this.handleClickCloseModal()}>Cancel</button>
                                                                                 </div>
                                                                                 <div className="col-md-6 ">
-                                                                                        <button type="button" className="btn btn-primary btn-delete"  onClick={() => this.handleTaskDelete()}>Delete</button> 
+                                                                                        <button type="button" className="btn btn-primary btn-delete" onClick={() => this.handleTaskDelete()}>Delete</button>
                                                                                 </div>
-                                                                     </div>
-                                                               </div>
+                                                                        </div>
+                                                                </div>
                                                         </div>
                                                 </div>
                                         </div>
