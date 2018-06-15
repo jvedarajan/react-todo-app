@@ -215,6 +215,7 @@ app.post('/api/updateTodoStatus', function (req, res) {
     const todoStatus  = req.body.taskStatus;
     const completed_at  = req.body.completed_at;
    var sql = "UPDATE users_todo_lists SET completed_at = '"+completed_at+"',todo_status = '"+todoStatus+"' WHERE id= '"+taskRowId+"'"; 
+
    con.query(sql, function (error, result) {
         if (error) throw error;
         if (result.affectedRows >= 0) {

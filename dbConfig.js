@@ -7,7 +7,8 @@ const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'todo_db'
+    database: 'todo_db',
+    dateStrings:true,
 });
 con.connect(function(err) {
     if (err) throw err;

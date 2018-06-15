@@ -43,9 +43,9 @@ class DashboardContent extends Component {
         });
     }
     getDateFormatChange = (date)=>{
-        
         if(date!=='' && date!==undefined && date!==null){
-           /* const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            /* const dateArr     = date.split(' ');
+           const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const dateArr     = date.split(' ');
             const month  = dateArr[0] ;
             const intMonth = months.indexOf(month)+1;

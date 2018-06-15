@@ -44,11 +44,11 @@ class Dashboard extends React.Component {
                 let h = this.checkTime(today.getHours());
                 const m = this.checkTime(today.getMinutes());
                 const s = this.checkTime(today.getSeconds());
-                const date = today.getDate();
-                const month = today.getMonth();
+                const date = this.checkTime(today.getDate());
+                const month = this.checkTime(today.getMonth()+1);
                 const year = today.getFullYear();
                 if (passdb) {
-                        const currentDateTime = year + "-" + month+1 + "-" + date + " " + h + ":" + m + ":" + s;
+                        const currentDateTime = year + "-" + month + "-" + date + " " + h + ":" + m + ":" + s;
                         return currentDateTime;
                 } else {
                         let setPeriod = "AM";
@@ -59,10 +59,9 @@ class Dashboard extends React.Component {
                                 }
                         }
                         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                        const displaydatetime = months[month] + " " + date + ", " + year + "  " + h + ":" + m + "  " + setPeriod;
+                        const displaydatetime = months[Math.round(month)-1] + " " + date + ", " + year + "  " + h + ":" + m + "  " + setPeriod;
                         return displaydatetime;
                 }
-
         }
         checkTime = (i) => {
                 if (i < 10) {
@@ -361,7 +360,7 @@ class Dashboard extends React.Component {
                                 }else if(status===1){
                                         status = "completed";    
                                 }
-                                const addTodoListObj = { "status": status, "title": todos.todo_name, "task": todos.todo_type, "created_at": todos.created_at,"id":todos.id };
+                                const addTodoListObj = { "status": status, "title": todos.todo_name, "task": todos.todo_type, "created_at": todos.created_at,"id":todos.id,"completed_at": todos.completed_at };
                                 userTodos[getTodoType].added_lists.push(addTodoListObj);
                         });
                         _this.setState({ menus: userTodos });
