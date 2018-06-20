@@ -1,8 +1,22 @@
 import React, { Component } from "react";
 class TasksComponent extends Component {
-    getTaskLists = () => {
+    componentWillReceiveProps = (nextProps)=>{
+       // console.log(nextProps);
+       this.getTaskLists(nextProps);
+    }
+    /*componentWillUpdate = ()=>{
+        this.getTaskLists();
+    }*/
+    getTaskLists = (getProps) => {
+     
         const task = this.props.taskType;
-        const userMenus = this.props.states.menus;
+        let userMenus;
+       if(getProps){
+             userMenus = getProps.states.menus;
+        }else{ 
+             userMenus = this.props.states.menus;
+        }
+
         const _this = this;
         return Object.keys(userMenus).map(function (menuObj, ind) { 
             if (userMenus[menuObj].menuname === task) {
@@ -59,7 +73,7 @@ class TasksComponent extends Component {
                         <div className="card-header">{this.props.taskType} Todo</div>
                         <div className="card-body">
                             <ul className="list-group list-group-flush">
-                                {this.getTaskLists()}
+                                {this.getTaskLists(this.props)}
                                 <li className="list-group-item"><span>Add To-Do in Lists</span><button type="button" className="btn btn-primary add-task-btn" onClick={() => this.clickAddEditTask('', 'Add', -1,-1)}><i className="fa fa-plus" aria-hidden="true"></i></button></li>
                             </ul>
                         </div>

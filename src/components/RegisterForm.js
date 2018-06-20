@@ -115,7 +115,7 @@ class RegisterForm extends Component {
             emailElement.classList.remove('invalid');
             emailElement.nextElementSibling.classList.add('hide');
         }
-        if (password !== "" && password.length >= 6 && fname !== "" && fname.length >= 6 && lname !== "" && email !== "") {
+        if (password !== "" && password.length >= 6 && fname !== "" && fname.length >= 3 && lname !== "" && email !== "") {
             flagSet  = true ;
         }
         if (flagSet) {

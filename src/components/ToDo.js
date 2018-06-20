@@ -152,7 +152,7 @@ class ToDo extends Component {
     callApiChangeTodoStatus = async (taskSelected, rowId, setDBstatus) => {
         const _this = this;
         let completed_at;
-        if (setDBstatus == 0) {
+        if (setDBstatus === 0) {
             completed_at = "0000-00-00 00:00:00";
         } else {
             completed_at = _this.props.states.datetime2;

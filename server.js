@@ -14,7 +14,8 @@ router.get('/api/hello', function (req, res, next) {
     res.render('index', { title: 'Express' });
 });
 app.get('/api/users', function (req, res) {
-    con.query('SELECT * FROM users', function (error, results, fields) {
+    const param = req.query.user;
+    con.query('SELECT * FROM users where id != "'+param+'" ', function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'Users list.', status: "OK" });
     });
@@ -144,7 +145,7 @@ app.post('/api/addEditTodo', function (req, res) {
     
     let sql;
     if(action==="Add"){
-        sql = "INSERT INTO users_todo_lists (user_id, todo_name,todo_type,created_at) VALUES ('" + userID + "','" + taskName + "','" + taskTodo + "','" + created_at + "')";
+        sql = "INSERT INTO users_todo_lists (user_id, todo_name,todo_type,created_at,menu_id,todo_status) VALUES ('" + userID + "','" + taskName + "','" + taskTodo + "','" + created_at + "',0,0)";
     }else{
         sql = "UPDATE users_todo_lists SET todo_name = '"+taskName+"' WHERE user_id = '"+userID+"' AND todo_type ='"+taskTodo+"' AND id= '"+rowId+"'";
     }
@@ -229,6 +230,31 @@ app.post('/api/updateTodoStatus', function (req, res) {
         }
         return res.send(data);
     });
+});
+
+app.post('/api/sendMessage', function (req, res) {
+   const rdata = req.body ;
+   let values = [];
+   let i ;
+   for(i=0;i<rdata.length;i++){
+        let arr = [rdata[i].user,rdata[i].receiver_id,rdata[i].send_msg,rdata[i].created_at,0,''];
+        values.push(arr);
+   }
+    //console.log(values);
+   var sql = "INSERT INTO users_msg  (senduser_id, receiveduser_id,send_msg,created_at,msg_status,reply_msg) VALUES ?"; 
+   con.query(sql, [values], function(err,result) {
+    if (err) throw err;
+    if (result.affectedRows >= 0) {
+        data["status"] = "OK";
+        data["message"] = "Send Successfully";
+        data["data"] = "";
+    } else {
+        data["message"] = "Not Send";
+        data["status"] = "ERR";
+        data["data"] = "";
+    }
+    return res.send(data);
+ });
 });
 
 app.use(function (req, res, next) {

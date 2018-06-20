@@ -7,10 +7,8 @@ import React from 'react';
 import applogo from '../images/Todo-Pollo-logo.png';
 //import userMenus from '../jsons/usermenus.json';
 import RegisterForm from "./RegisterForm";
-import axios from 'axios';
-if (localStorage.getItem('userInfo') !== undefined) {
-  var userInformation = JSON.parse(localStorage.getItem('userInfo'));
-}
+//import axios from 'axios';
+
 class Login extends React.Component {
   constructor() {
     super();
@@ -151,14 +149,13 @@ class Login extends React.Component {
     }
   }
   componentDidMount = () => {
-    axios.get('/api/users')
+  /*  axios.get('/api/users')
       .then(function (response) {
         const responsedata = response.data;
-        console.log(responsedata);
       })
       .catch(function (error) {
         console.log(error);
-      });
+      });*/
   }
   render() {
     return (

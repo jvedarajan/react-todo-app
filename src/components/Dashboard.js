@@ -1,11 +1,12 @@
 import React from 'react';
 import userphoto from '../images/user_icon.png';
-import { Route, BrowserRouter as HashRouter, NavLink, Switch, Router } from 'react-router-dom';
+import { Route, BrowserRouter as HashRouter, NavLink, Switch } from 'react-router-dom';
 //import { Redirect } from 'react-router'
 import DashboardContent from "./DashboardContent";
 import MyDay from "./MyDay";
 import ToDo from "./ToDo";
 import TasksComponent from "./TasksComponent";
+import UsersChatComponent from "./UsersChatComponent";
 document.onclick = function () {
         const thisElement = document.getElementById("newlist");
         if (thisElement) {
@@ -27,8 +28,10 @@ class Dashboard extends React.Component {
                 this.callApigetCustomMenus(propsVals.userRowIndex);
                 //this.getTime();
         }
+       
         getCustomTasks = () => {
                 const getMenus = this.state.menus;
+                console.log(getMenus);
                 Object.keys(getMenus).map(function (menuObject, ind) {
                         if (getMenus[menuObject].type === 'custom') {
                                 newListAdded.push({ "path": "/" + getMenus[menuObject].menuname.toLowerCase(), "component": "TasksComponent", "task": getMenus[menuObject].menuname });
@@ -420,6 +423,7 @@ class Dashboard extends React.Component {
                                                                 ))}
                                                         </Switch>
                                                 </div>
+                                                <UsersChatComponent  states={this.state}/>
                                         </div>
                                 </div>
                                 <div className="modal" id="modalTask" role="dialog" ref="modalTask">

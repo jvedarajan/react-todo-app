@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //import ReactDom from 'react-dom';
-import { Route, Redirect } from 'react-router';
+import { Route } from 'react-router';
 //import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 //import { reduxReactRouter, routerStateReducer, ReduxRouter } from 'redux-react-router';
@@ -45,7 +45,7 @@ class App extends Component {
   
   render() {
     const _this = this;
-    const redirect = _this.state.redirect;
+   // const redirect = _this.state.redirect;
     const userMenusStorages = _this.state.menus;
     return (
       <Router>

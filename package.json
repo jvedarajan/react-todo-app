@@ -9,6 +9,7 @@
     "bootstrap": "^4.1.1",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
+    "create-react-class": "^15.6.3",
     "crypto-js": "^3.1.9-1",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
@@ -30,12 +31,17 @@
     "nedb": "^1.8.0",
     "node.date-time": "^1.2.2",
     "nodemon": "^1.17.5",
+    "rc-datetime-picker": "^1.6.1",
     "react": "^16.4.0",
+    "react-bootstrap": "^0.32.1",
+    "react-bootstrap-date-picker": "^5.1.0",
+    "react-datepicker": "^1.5.0",
     "react-dom": "^16.4.0",
     "react-fontawesome": "^1.6.1",
     "react-history": "^0.18.2",
     "react-modal-bootstrap": "^1.1.1",
     "react-redux": "^5.0.7",
+    "react-responsive-tabs": "^2.1.0",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^4.0.8",
@@ -59,6 +65,7 @@
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:3001/",
+  "secure": false,
   "devDependencies": {
     "concurrently": "^3.5.1",
     "eslint": "^4.19.1"
