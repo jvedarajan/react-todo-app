@@ -4,15 +4,18 @@ import axios from 'axios';
 //import 'react-responsive-tabs/styles.css';
 //<Tabs items={this.getTabs()} />
 const users = [];
+const userMsgs = [];
 class UsersChat extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            otherUsers: []
+            otherUsers: [],
+            userMsgs: []
         }
     }
     componentDidMount = () => {
         this.getAllUsers();
+        this.getAllUserMsgs();
     }
     getAllUsers = () => {
         const _this = this;
@@ -20,14 +23,30 @@ class UsersChat extends Component {
             params: {
                 user: _this.props.states.userRowIndex
             }
+        }).then(function (response) {
+            const responsedata = response.data.data;
+            responsedata.map(function (item, i) {
+                users.push({ "id": item.id, "name": item.firstname + ' ' + item.lastname });
+            });
+            _this.setState({ otherUsers: users });
         })
-            .then(function (response) {
-                const responsedata = response.data.data;
-                responsedata.map(function (item, i) {
-                    users.push({ "id": item.id, "name": item.firstname + ' ' + item.lastname });
-                });
-                _this.setState({ otherUsers: users });
-            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+    getAllUserMsgs = () => {
+        const _this = this;
+        axios.get('/api/userMessages', {
+            params: {
+                user: _this.props.states.userRowIndex
+            }
+        }).then(function (response) {
+            const responsedata = response.data.data;
+            responsedata.map(function (item, i) {
+                userMsgs.push({ "send_msg": item.send_msg,"id": item.id });
+            });
+            _this.setState({ userMsgs: userMsgs });
+        })
             .catch(function (error) {
                 console.log(error);
             });
@@ -60,8 +79,8 @@ class UsersChat extends Component {
     handleClickTab = (clickTab) => {
         const sendli = this.refs.send;
         const inboxli = this.refs.inbox;
-        const sendMsgSection = this.refs.sendMsgSection ;
-        const receiveMsgSection = this.refs.receiveMsgSection ;
+        const sendMsgSection = this.refs.sendMsgSection;
+        const receiveMsgSection = this.refs.receiveMsgSection;
         if (sendli !== undefined && inboxli !== undefined) {
             if (clickTab === "send") {
                 sendli.classList.add('active');
@@ -76,7 +95,7 @@ class UsersChat extends Component {
             }
         }
     }
-    handleClickSendMsg = async() => {
+    handleClickSendMsg = async () => {
         const msg = this.refs.sendmsg.value.trim();
         //const users = this.refs.send_usersusers;
         if (msg !== "") {
@@ -90,7 +109,7 @@ class UsersChat extends Component {
                 for (i = 0, n = users.length; i < n; i++) {
                     if (users[i].checked) {
                         // vals += "," + users[i].value;
-                        objData = { "user": userId, "send_msg": msg, "receiver_id": users[i].value,"created_at":created_at };
+                        objData = { "user": userId, "send_msg": msg, "receiver_id": users[i].value, "created_at": created_at };
                         postData.push(objData);
                     }
                 }
@@ -108,7 +127,7 @@ class UsersChat extends Component {
                 }
                 else {
                     alert("Error Occured Try again later");
-              }
+                }
             }
         }
     }
@@ -144,7 +163,11 @@ class UsersChat extends Component {
                             </div>
                         </section>
                         <section ref="receiveMsgSection">
-
+                        <ul className="list-group list-group-flush">
+                            {this.state.userMsgs.map(usermsg =>
+                                <li key={usermsg.id} className="list-group-item">{usermsg.send_msg}</li>
+                            )}
+                         </ul>
                         </section>
                     </div>
                 </div>

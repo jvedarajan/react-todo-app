@@ -257,6 +257,14 @@ app.post('/api/sendMessage', function (req, res) {
  });
 });
 
+app.get('/api/userMessages', function (req, res) {
+    const param = req.query.user;
+    con.query('SELECT * FROM users_msg where receiveduser_id = "'+param+'" OR senduser_id ="'+param+'" ', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({ error: false, data: results, message: 'Users list.', status: "OK" });
+    });
+});
+
 app.use(function (req, res, next) {
     res.status(404).send("Sorry, that route doesn't exist. Have a nice day :)");
 });
