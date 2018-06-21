@@ -6,4 +6,11 @@ CREATE TABLE users_custom_menus (id int NOT NULL AUTO_INCREMENT,user_id int(11) 
 
 CREATE TABLE users_todo_lists (id int NOT NULL AUTO_INCREMENT,user_id int(11) NOT NULL,menu_id int(11) NOT NULL, todo_name CHAR(255) NOT NULL,todo_type CHAR(50) NOT NULL,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,todo_status int NOT NULL,PRIMARY KEY (id));
 
-CREATE TABLE users_msg (id int NOT NULL AUTO_INCREMENT,senduser_id int(11) NOT NULL,receiveduser_id int(11) NOT NULL, send_msg CHAR(255) NOT NULL,reply_msg CHAR(255) NOT NULL,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,msg_status int NOT NULL,PRIMARY KEY (id));
+CREATE TABLE users_msg (id int NOT NULL AUTO_INCREMENT,senduser_id int(11) NOT NULL,receiveduser_id int(11) NOT NULL, send_msg CHAR(255) NOT NULL,reply_msg CHAR(255) NOT NULL,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,replied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,msg_status int NOT NULL,PRIMARY KEY (id));
+
+
+ALTER TABLE users_msg 
+ADD COLUMN replied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER created_at;
+
+ALTER TABLE users_msg 
+DROP COLUMN replied_at;

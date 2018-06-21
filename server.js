@@ -15,7 +15,7 @@ router.get('/api/hello', function (req, res, next) {
 });
 app.get('/api/users', function (req, res) {
     const param = req.query.user;
-    con.query('SELECT * FROM users where id != "'+param+'" ', function (error, results, fields) {
+    con.query('SELECT * FROM users where id != "' + param + '" ', function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'Users list.', status: "OK" });
     });
@@ -34,7 +34,7 @@ app.post('/api/register', function (req, res) {
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
     const createdTime = req.body.currenttime;
-    
+
     con.query("SELECT id from users WHERE email=?  LIMIT 1", [email], function (err, rows, fields) {
         if (rows.length != 0) {
             data["message"] = "Already Email is exists";
@@ -98,33 +98,33 @@ app.post('/api/addMenu', function (req, res) {
     const userId = req.body.user;
     const display_order = req.body.display_order;
     const created_at = req.body.created_at;
-  
-    const sql = "INSERT INTO users_custom_menus (user_id, menu_display_order,menuname,path,created_at) VALUES ('"+userId+"','"+display_order+"','"+menu+"','"+path+"','"+created_at+"')";
-     con.query(sql, function (err, result) {
-    if (err) throw err;
-     if(result.affectedRows>=1){
-        data["message"] = "New Menu added Successfully";
-        data["status"] = "OK";
-        data["data"] = "";
-     }else{
-        data["message"] = "New Menu not added";
-        data["status"] = "ERR";
-        data["data"] = "";
-     }
-     return res.send(data);
-  });
+
+    const sql = "INSERT INTO users_custom_menus (user_id, menu_display_order,menuname,path,created_at) VALUES ('" + userId + "','" + display_order + "','" + menu + "','" + path + "','" + created_at + "')";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        if (result.affectedRows >= 1) {
+            data["message"] = "New Menu added Successfully";
+            data["status"] = "OK";
+            data["data"] = "";
+        } else {
+            data["message"] = "New Menu not added";
+            data["status"] = "ERR";
+            data["data"] = "";
+        }
+        return res.send(data);
+    });
 });
 
 /* Based on user login get custom menu names get*/
 app.post('/api/getUserCustomMenus', function (req, res) {
     const userID = req.body.user;
 
-    con.query('SELECT menuname,path,created_at,menu_display_order FROM users_custom_menus WHERE user_id=? ',[userID], function (error, rows, fields) {
+    con.query('SELECT menuname,path,created_at,menu_display_order FROM users_custom_menus WHERE user_id=? ', [userID], function (error, rows, fields) {
         if (error) throw error;
         if (rows.length != 0) {
             data["status"] = "OK";
             data["message"] = "Custom menus are added";
-            data["data"]   = rows ;
+            data["data"] = rows;
         } else {
             data["message"] = "No Custom menus are added";
             data["status"] = "ERR";
@@ -142,22 +142,22 @@ app.post('/api/addEditTodo', function (req, res) {
     const created_at = req.body.created_at;
     const action = req.body.taskAction;
     const rowId = req.body.editID;
-    
+
     let sql;
-    if(action==="Add"){
+    if (action === "Add") {
         sql = "INSERT INTO users_todo_lists (user_id, todo_name,todo_type,created_at,menu_id,todo_status) VALUES ('" + userID + "','" + taskName + "','" + taskTodo + "','" + created_at + "',0,0)";
-    }else{
-        sql = "UPDATE users_todo_lists SET todo_name = '"+taskName+"' WHERE user_id = '"+userID+"' AND todo_type ='"+taskTodo+"' AND id= '"+rowId+"'";
+    } else {
+        sql = "UPDATE users_todo_lists SET todo_name = '" + taskName + "' WHERE user_id = '" + userID + "' AND todo_type ='" + taskTodo + "' AND id= '" + rowId + "'";
     }
     con.query(sql, function (err, result) {
         if (err) throw err;
         if (result.affectedRows >= 1) {
             data["message"] = "New todo added Successfully";
             data["status"] = "OK";
-            if(action==="Add"){
-                data["data"]   = result.insertId;
-            }else{
-                data["data"]   = result.rowId;
+            if (action === "Add") {
+                data["data"] = result.insertId;
+            } else {
+                data["data"] = result.rowId;
             }
         } else {
             data["message"] = "todo not updated ";
@@ -171,13 +171,13 @@ app.post('/api/addEditTodo', function (req, res) {
 /* get users added todolists*/
 app.post('/api/getUserTodoLists', function (req, res) {
     const userID = req.body.user;
-    
-    con.query('SELECT * FROM users_todo_lists WHERE user_id=? ',[userID], function (error, rows, fields) {
+
+    con.query('SELECT * FROM users_todo_lists WHERE user_id=? ', [userID], function (error, rows, fields) {
         if (error) throw error;
         if (rows.length != 0) {
             data["status"] = "OK";
             data["message"] = "Todo lists are available";
-            data["data"]   = rows ;
+            data["data"] = rows;
         } else {
             data["message"] = "Empty Todo lists";
             data["status"] = "ERR";
@@ -192,15 +192,15 @@ app.post('/api/deleteTodo', function (req, res) {
     const userID = req.body.user;
     const taskType = req.body.taskTodo;
     const taskRowId = req.body.rowId;
-    con.query('DELETE FROM users_todo_lists WHERE user_id=? and id=? and todo_type=?',[userID,taskRowId,taskType], function (error,result) {
-      
+    con.query('DELETE FROM users_todo_lists WHERE user_id=? and id=? and todo_type=?', [userID, taskRowId, taskType], function (error, result) {
+
         if (error) throw error;
         if (result.affectedRows >= 0) {
             data["status"] = "OK";
             data["message"] = "Deleted Successfully";
             data["data"] = "";
         } else {
-            data["message"] = taskType+" todo is not deleted";
+            data["message"] = taskType + " todo is not deleted";
             data["status"] = "ERR";
             data["data"] = "";
         }
@@ -213,11 +213,11 @@ app.post('/api/updateTodoStatus', function (req, res) {
     const userID = req.body.user;
     const taskType = req.body.taskTodo;
     const taskRowId = req.body.rowId;
-    const todoStatus  = req.body.taskStatus;
-    const completed_at  = req.body.completed_at;
-   var sql = "UPDATE users_todo_lists SET completed_at = '"+completed_at+"',todo_status = '"+todoStatus+"' WHERE id= '"+taskRowId+"'"; 
+    const todoStatus = req.body.taskStatus;
+    const completed_at = req.body.completed_at;
+    var sql = "UPDATE users_todo_lists SET completed_at = '" + completed_at + "',todo_status = '" + todoStatus + "' WHERE id= '" + taskRowId + "'";
 
-   con.query(sql, function (error, result) {
+    con.query(sql, function (error, result) {
         if (error) throw error;
         if (result.affectedRows >= 0) {
             data["status"] = "OK";
@@ -231,37 +231,78 @@ app.post('/api/updateTodoStatus', function (req, res) {
         return res.send(data);
     });
 });
-
+/* send single or multi msges to other users*/
 app.post('/api/sendMessage', function (req, res) {
-   const rdata = req.body ;
-   let values = [];
-   let i ;
-   for(i=0;i<rdata.length;i++){
-        let arr = [rdata[i].user,rdata[i].receiver_id,rdata[i].send_msg,rdata[i].created_at,0,''];
+    const rdata = req.body;
+    let values = [];
+    let i;
+    for (i = 0; i < rdata.length; i++) {
+        let arr = [rdata[i].user, rdata[i].receiver_id, rdata[i].send_msg, rdata[i].created_at, 0, ''];
         values.push(arr);
-   }
-    //console.log(values);
-   var sql = "INSERT INTO users_msg  (senduser_id, receiveduser_id,send_msg,created_at,msg_status,reply_msg) VALUES ?"; 
-   con.query(sql, [values], function(err,result) {
-    if (err) throw err;
-    if (result.affectedRows >= 0) {
-        data["status"] = "OK";
-        data["message"] = "Send Successfully";
-        data["data"] = "";
-    } else {
-        data["message"] = "Not Send";
-        data["status"] = "ERR";
-        data["data"] = "";
     }
-    return res.send(data);
- });
+    //console.log(values);
+    var sql = "INSERT INTO users_msg  (senduser_id, receiveduser_id,send_msg,created_at,msg_status,reply_msg) VALUES ?";
+    con.query(sql, [values], function (err, result) {
+        if (err) throw err;
+        if (result.affectedRows >= 0) {
+            data["status"] = "OK";
+            data["message"] = "Send Successfully";
+            data["data"] = "";
+        } else {
+            data["message"] = "Not Send";
+            data["status"] = "ERR";
+            data["data"] = "";
+        }
+        return res.send(data);
+    });
 });
 
+/* get all user messages*/
 app.get('/api/userMessages', function (req, res) {
-    const param = req.query.user;
-    con.query('SELECT * FROM users_msg where receiveduser_id = "'+param+'" OR senduser_id ="'+param+'" ', function (error, results, fields) {
+    const userId = req.query.user;
+    const type = req.query.type;
+    let queryCondition, orderWise;
+    if (type === "all") {
+        queryCondition = 'senduser_id ="' + userId + '"';
+        orderWise = "DESC";
+    } else {
+        queryCondition = 'receiveduser_id ="' + userId + '"';
+        orderWise = "ASC";
+    }
+    var sql = 'SELECT * FROM users_msg where senduser_id ="' + userId + '" OR receiveduser_id ="' + userId + '" ORDER BY id ' + orderWise + '';
+
+    con.query(sql, function (error, results) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Users list.', status: "OK" });
+        return res.send({ error: false, data: results, message: 'Msgs list.', status: "OK" });
+    });
+});
+
+
+/* update reply Message to user*/
+app.post('/api/replyMessage', function (req, res) {
+    const sendUser = req.body.user;
+    const receiveUser = req.body.rec_user;
+    const msg = req.body.msg;
+    const time = req.body.replied_at;
+    const type = req.body.type;
+    let sql;
+    if (type === "reply") {
+        sql = "UPDATE users_msg SET replied_at = '" + time + "',reply_msg = '" + msg + "',msg_status='1' WHERE senduser_id= '" + sendUser + "' AND receiveduser_id = '" + receiveUser + "' ORDER BY id DESC Limit 1";
+    } else {
+        sql = "INSERT INTO users_msg  (senduser_id, receiveduser_id,send_msg,created_at,msg_status,reply_msg) VALUES ('" + sendUser + "','" + receiveUser + "','" + msg + "','" + time + "',0,'')";
+    }
+    con.query(sql, function (error, result) {
+        if (error) throw error;
+        if (result.affectedRows >= 0) {
+            data["status"] = "OK";
+            data["message"] = "Msg send Successfully";
+            data["data"] = "";
+        } else {
+            data["message"] = "not updated";
+            data["status"] = "ERR";
+            data["data"] = "";
+        }
+        return res.send(data);
     });
 });
 

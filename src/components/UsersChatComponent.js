@@ -3,14 +3,13 @@ import axios from 'axios';
 //import Tabs from 'react-responsive-tabs';
 //import 'react-responsive-tabs/styles.css';
 //<Tabs items={this.getTabs()} />
-const users = [];
-const userMsgs = [];
 class UsersChat extends Component {
     constructor(props) {
         super(props);
         this.state = {
             otherUsers: [],
-            userMsgs: []
+            userMsgs: [],
+            selectedUserMsgs: []
         }
     }
     componentDidMount = () => {
@@ -19,6 +18,7 @@ class UsersChat extends Component {
     }
     getAllUsers = () => {
         const _this = this;
+        const users = [];
         axios.get('/api/users', {
             params: {
                 user: _this.props.states.userRowIndex
@@ -35,15 +35,44 @@ class UsersChat extends Component {
             });
     }
     getAllUserMsgs = () => {
+        const userMsgs = [];
         const _this = this;
+        const userID = this.props.states.userRowIndex;
         axios.get('/api/userMessages', {
             params: {
-                user: _this.props.states.userRowIndex
+                user: userID,
+                type: "all"
             }
         }).then(function (response) {
             const responsedata = response.data.data;
+            const usersData = _this.state.otherUsers;
+            const allMsgedUsers = [];
             responsedata.map(function (item, i) {
-                userMsgs.push({ "send_msg": item.send_msg,"id": item.id });
+                const rec_uid = item.receiveduser_id;
+                const send_uid = item.senduser_id;
+                const loggedUser = localStorage.getItem('loggedUserName');
+                let recName,sendName = '';
+                let lastMsgBy = '';
+                let msgType = '';
+                if (allMsgedUsers.indexOf(rec_uid) === -1 || allMsgedUsers.indexOf(send_uid) === -1) {
+                    if(parseInt(rec_uid)!==parseInt(userID)){
+                        const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(rec_uid);
+                        recName = usersData[findUserRowIndex].name;
+                        sendName = loggedUser ;
+                        lastMsgBy = "You:";
+                        msgType  = "send";
+                    }else{
+                        recName   = localStorage.getItem('loggedUserName');
+                        const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(send_uid);
+                        if(usersData[findUserRowIndex]!==undefined){
+                            sendName = usersData[findUserRowIndex].name;
+                        }
+                        
+                        msgType  = "receive";
+                    }
+                        userMsgs.push({ "send_msg": lastMsgBy + " " + item.send_msg, "receiver_id": rec_uid, "msg_rec_name": recName,"msg_send_name":sendName, "id": item.id,"msg_type":msgType });
+                }
+                allMsgedUsers.push(rec_uid);
             });
             _this.setState({ userMsgs: userMsgs });
         })
@@ -51,16 +80,7 @@ class UsersChat extends Component {
                 console.log(error);
             });
     }
-    getTabs = () => {
-        const tabListsArr = [{ name: <span className="tabs"><i class="fa fa-envelope" aria-hidden="true"></i> Send</span>, content: 'First' }, { name: <span className="tabs"><i className="fa fa-envelope-open" aria-hidden="true"></i> Inbox</span>, content: 'Second' }];
-        return tabListsArr.map(tabLists => ({
-            /* key: index, // Optional. Equals to tab index if this property is omitted
-             tabClassName: 'tab', // Optional
-             panelClassName: 'panel', // Optional*/
-            title: tabLists.name,
-            getContent: () => tabLists.content,
-        }));
-    }
+    
     handleClickChatBox = (ele) => {
         const target = ele.target || ele.srcElement;
         const checkActive = (' ' + target.className + ' ').indexOf('fa-chevron-up') > -1;
@@ -79,19 +99,23 @@ class UsersChat extends Component {
     handleClickTab = (clickTab) => {
         const sendli = this.refs.send;
         const inboxli = this.refs.inbox;
-        const sendMsgSection = this.refs.sendMsgSection;
+        const userMsgSection = this.refs.userMsgSection;
         const receiveMsgSection = this.refs.receiveMsgSection;
+        const puserMsgSection = this.refs.puserMsgSection;
         if (sendli !== undefined && inboxli !== undefined) {
+            puserMsgSection.style.display = "none";
             if (clickTab === "send") {
                 sendli.classList.add('active');
                 inboxli.classList.remove('active');
-                sendMsgSection.style.display = "block";
+                userMsgSection.style.display = "block";
                 receiveMsgSection.style.display = "none";
+                this.getAllUsers();
             } else {
                 sendli.classList.remove('active');
                 inboxli.classList.add('active');
-                sendMsgSection.style.display = "none";
+                userMsgSection.style.display = "none";
                 receiveMsgSection.style.display = "block";
+                this.getAllUserMsgs();
             }
         }
     }
@@ -131,6 +155,114 @@ class UsersChat extends Component {
             }
         }
     }
+    handleClickReplyMsg = async () => {
+        const msg = this.refs.user_sendmsg.value.trim();
+        if (msg !== "") {
+            const userId = this.props.states.userRowIndex;
+            const dateTime = this.props.states.datetime2;
+            const receiveUser = this.refs.selected_user_id.getAttribute("data-ruser");
+            const lastMsgType = this.refs.selected_user_id.getAttribute("data-last-msg-status");
+            let type = "reply";
+            if(parseInt(lastMsgType)===0){
+                    type = "send";
+            }
+            const response = await fetch('/api/replyMessage',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        msg: msg,
+                        rec_user: receiveUser,
+                        user: userId,
+                        replied_at: dateTime,
+                        type: type
+                    }),
+                    headers: { "Content-Type": "application/json" }
+                });
+            const body = await response.json();
+            if (response.status !== 200) throw Error(body.message);
+            if (body.status === "OK") {
+                this.refs.user_sendmsg.value = '';
+            }
+            else {
+                alert("Error Occured Try again later");
+            }
+        }
+    }
+    handleClickUserMsg = async (id) => {
+        const userMsgs = [];
+        const _this = this;
+        axios.get('/api/userMessages', {
+            params: {
+                user: id,
+                type: "single"
+            }
+        }).then(function (response) {
+            const responsedata = response.data.data;
+            const usersData = _this.state.otherUsers;
+            const allMsgedUsers = [];
+            responsedata.map(function (item, i) {
+                const rec_uid = item.receiveduser_id;
+                const send_uid = item.senduser_id;
+                let recName,sendName = "",msgType,receiverID;
+                const userID = _this.props.states.userRowIndex;
+                const loggedUser = localStorage.getItem('loggedUserName');
+                if(parseInt(rec_uid)!==parseInt(userID) ){
+                    const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(rec_uid);
+                    recName = usersData[findUserRowIndex].name;
+                    sendName = loggedUser ;
+                    msgType  = "send";
+                    receiverID = rec_uid;
+
+                }else{
+                    recName   = localStorage.getItem('loggedUserName');
+                    const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(send_uid);
+                    if(usersData[findUserRowIndex]!==undefined){
+                        sendName = usersData[findUserRowIndex].name;
+                    }
+                    msgType  = "receive";
+                    receiverID = send_uid ;
+                }
+                const msgStatus = item.msg_status;
+                userMsgs.push({ "send_msg": item.send_msg, "reply_msg": item.reply_msg, "receiver_id": receiverID, "msg_rec_name": recName,"msg_send_name":sendName,"id": item.id, "msg_status": msgStatus, "send_at": item.created_at,"msg_type":msgType });
+                allMsgedUsers.push(receiverID);
+            });
+            _this.setState({ selectedUserMsgs: userMsgs });
+            const receiveMsgSection = _this.refs.receiveMsgSection;
+            const puserMsgSection = _this.refs.puserMsgSection;
+            const userMsgSection = _this.refs.userMsgSection;
+            receiveMsgSection.style.display = "none";
+            userMsgSection.style.display = "none";
+            puserMsgSection.style.display = "block";
+        })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+    handleSelectedUser = () => {
+        const userMsgs = this.state.selectedUserMsgs;
+        if (userMsgs.length > 0) {
+            this.refs.selected_user_id.setAttribute('data-ruser', userMsgs[0].receiver_id);
+            this.refs.selected_user_id.setAttribute('data-last-msg-status', userMsgs[userMsgs.length-1].msg_status);
+            return userMsgs[0].msger_name;
+        }
+    }
+    checkEmptyMsg = (msg,type) => {
+        if (msg !== "") {
+            console.log(this.state.selectedUserMsgs);
+            return <p className={type+"_message"}>{msg}</p>;
+        }
+    }
+    checkMsgedUser = (checkmsgType,senderName,receiverName)=>{
+        let displayUser,addClass ;
+        if(checkmsgType==="send"){
+            displayUser = receiverName;
+            addClass  = "sender";
+        }else{
+            displayUser = senderName;
+            addClass   ="receiver"
+        }
+        return   <p className={addClass+" username"}>{displayUser}</p>;
+    }
     render() {
         return (
             <div className="chat-box card">
@@ -141,12 +273,12 @@ class UsersChat extends Component {
                 <div className="chat-box-body card-body" ref="msgbox">
                     <div className="tabs">
                         <ul className="ul_tabs">
-                            <li className="send active" ref="send" onClick={this.handleClickTab.bind(this, 'send')}><span className="tab"><i className="fa fa-envelope" aria-hidden="true"></i> Send</span></li>
-                            <li className="receive" ref="inbox" onClick={this.handleClickTab.bind(this, 'inbox')}><span className="tab" ><i className="fa fa-envelope-open" aria-hidden="true"></i> Inbox</span></li>
+                            <li className="send active" ref="send" onClick={this.handleClickTab.bind(this, 'send')}><span className="tab"><i className="fa fa-envelope" aria-hidden="true"></i> Users</span></li>
+                            <li className="receive" ref="inbox" onClick={this.handleClickTab.bind(this, 'inbox')}><span className="tab" ><i className="fa fa-envelope-open" aria-hidden="true"></i> Messages</span></li>
                         </ul>
                     </div>
                     <div className="tabs_content" >
-                        <section ref="sendMsgSection">
+                        <section ref="userMsgSection">
                             <ul className="list-group list-group-flush">
                                 {this.state.otherUsers.map(user =>
                                     <li key={user.id} className="list-group-item"> <label className="user_label">{user.name}<input type="checkbox" name="send_users[]" ref="send_users" value={user.id} />
@@ -163,11 +295,32 @@ class UsersChat extends Component {
                             </div>
                         </section>
                         <section ref="receiveMsgSection">
-                        <ul className="list-group list-group-flush">
-                            {this.state.userMsgs.map(usermsg =>
-                                <li key={usermsg.id} className="list-group-item">{usermsg.send_msg}</li>
-                            )}
-                         </ul>
+                            <ul className="list-group list-group-flush msg_lists">
+                                {this.state.userMsgs.map(usermsg =>
+                                    <li key={usermsg.id} data-user={usermsg.receiver_id} className={usermsg.msg_type+ " list-group-item"} onClick={() => this.handleClickUserMsg(usermsg.receiver_id)}>
+                                     {this.checkMsgedUser(usermsg.msg_type,usermsg.msg_send_name,usermsg.msg_rec_name)}
+                                    <span className="usermsg">{usermsg.send_msg}</span></li>
+                                )}
+                            </ul>
+                        </section>
+                        <section ref="puserMsgSection" id="puserMsgSection">
+                            <ul className="list-group list-group-flush user_msgs">
+                                <li className="list-group-item" ref="selected_user_id">{this.handleSelectedUser()}</li>
+                                {this.state.selectedUserMsgs.map(usermsg =>
+                                    <li key={usermsg.id} data-user={usermsg.receiver_id} className="list-group-item">
+                                     <p className={usermsg.msg_type+"_message"}>{usermsg.send_msg}</p>
+                                        {this.checkEmptyMsg(usermsg.reply_msg,usermsg.msg_type)}
+                                    </li>
+                                )}
+                            </ul>
+                            <div className="row">
+                                <div className="col-md-9">
+                                    <textarea rows="2" cols="25" ref="user_sendmsg"></textarea>
+                                </div>
+                                <div className="col-md-3">
+                                    <button type="button" className="btn btn-primary" onClick={this.handleClickReplyMsg.bind(this)}><i className="fa fa-send" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
                         </section>
                     </div>
                 </div>

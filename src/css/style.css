@@ -580,7 +580,6 @@ ul.ul_tabs li.active{
 .user_label input:checked ~ .checkmark:after {
   display: block;
 }
-
 /* Style the checkmark/indicator */
 .user_label .checkmark:after {
   left: 9px;
@@ -592,4 +591,85 @@ ul.ul_tabs li.active{
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+.msg_lists li{
+  padding:2px 2.25rem;
+  cursor:pointer;
+}
+.msg_lists li:before{
+  background-image: url("../images/user_icon2.png");
+  background-size: 25px;
+  display: inline-block;
+    width: 25px; 
+    height: 25px;
+    content:"";
+    position: absolute;
+    left: 0px;
+    top: 8px;
+    z-index:10;
+}
+.msg_lists li.send:before{
+  background-image: url("../images/user_icon.png");
+}
+.msg_lists p.username{
+  font-size:14px;
+  color:#888;
+  margin:0;
+}
+.msg_lists span.usermsg{
+  font-size:12px;
+  color:#aaaaaa;
+}
+#puserMsgSection{
+  display:none;
+}
+.user_msgs li:not(:first-child){
+  border:none;
+  padding:2px 2.25rem;
+}
+.user_msgs li:first-child{
+  margin:0;
+  text-align:center;
+}
+.user_msgs li p{
+  font-size:13px;
+  margin:0;
+  display:block;
+}
+.user_msgs .send_message{
+  float:left;
+}
+.user_msgs .receive_message{
+  float:right;
+  margin-top: 16px;
+}
+.user_msgs .send_message:before{
+  background-image: url("../images/user_icon.png");
+  background-size: 25px;
+  display: inline-block;
+    width: 25px; 
+    height: 25px;
+    content:"";
+    position: absolute;
+    left: 0px;
+    top: 3px;
+    z-index:10;
+}
+.user_msgs .receive_message:after{
+  background-image: url("../images/user_icon2.png");
+  background-size: 25px;
+  display: inline-block;
+    width: 25px; 
+    height: 25px;
+    content:"";
+    position: absolute;
+    right: 0px;
+    top: 13px;
+    z-index:10;
+}
+.card-body{
+  padding:0;
+}
+.card-body .tabs_content{
+  margin:10px;
 }
