@@ -272,7 +272,6 @@ app.get('/api/userMessages', function (req, res) {
         orderWise = "ASC";
     }
     var sql = 'SELECT * FROM users_msg where ' + queryCondition + ' ORDER BY id ' + orderWise + '';
-console.log(sql);
     con.query(sql, function (error, results) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'Msgs list.', status: "OK" });
