@@ -46,7 +46,9 @@ class UsersChat extends Component {
         }).then(function (response) {
             const responsedata = response.data.data;
             const usersData = _this.state.otherUsers;
-            const allMsgedUsers = [];
+           // const allMsgedUsers = [];
+           const sendUsers = [];
+           const receiveUsers = [];
             responsedata.map(function (item, i) {
                 const rec_uid = item.receiveduser_id;
                 const send_uid = item.senduser_id;
@@ -54,7 +56,8 @@ class UsersChat extends Component {
                 let recName,sendName = '';
                 let lastMsgBy = '';
                 let msgType = '';
-                if (allMsgedUsers.indexOf(rec_uid) === -1 || allMsgedUsers.indexOf(send_uid) === -1) {
+                
+                if (receiveUsers.indexOf(rec_uid) === -1 || sendUsers.indexOf(send_uid) === -1) {
                     if(parseInt(rec_uid)!==parseInt(userID)){
                         const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(rec_uid);
                         recName = usersData[findUserRowIndex].name;
@@ -67,14 +70,17 @@ class UsersChat extends Component {
                         if(usersData[findUserRowIndex]!==undefined){
                             sendName = usersData[findUserRowIndex].name;
                         }
-                        
                         msgType  = "receive";
                     }
-                        userMsgs.push({ "send_msg": lastMsgBy + " " + item.send_msg, "receiver_id": rec_uid, "msg_rec_name": recName,"msg_send_name":sendName, "id": item.id,"msg_type":msgType });
+                        userMsgs.push({ "send_msg": lastMsgBy + " " + item.send_msg, "receiver_id": rec_uid,"sender_id": send_uid, "msg_rec_name": recName,"msg_send_name":sendName, "id": item.id,"msg_type":msgType });
                 }
-                allMsgedUsers.push(rec_uid);
+                // allMsgedUsers.push(rec_uid);
+                sendUsers.push(send_uid);
+                receiveUsers.push(rec_uid);
+               
             });
             _this.setState({ userMsgs: userMsgs });
+            console.log(_this.state.userMsgs);
         })
             .catch(function (error) {
                 console.log(error);
@@ -188,12 +194,13 @@ class UsersChat extends Component {
             }
         }
     }
-    handleClickUserMsg = async (id) => {
+    handleClickUserMsg = async (recid,sendid) => {
         const userMsgs = [];
         const _this = this;
         axios.get('/api/userMessages', {
             params: {
-                user: id,
+                rec_user: recid,
+                send_user: sendid,
                 type: "single"
             }
         }).then(function (response) {
@@ -248,7 +255,6 @@ class UsersChat extends Component {
     }
     checkEmptyMsg = (msg,type) => {
         if (msg !== "") {
-            console.log(this.state.selectedUserMsgs);
             return <p className={type+"_message"}>{msg}</p>;
         }
     }
@@ -297,7 +303,7 @@ class UsersChat extends Component {
                         <section ref="receiveMsgSection">
                             <ul className="list-group list-group-flush msg_lists">
                                 {this.state.userMsgs.map(usermsg =>
-                                    <li key={usermsg.id} data-user={usermsg.receiver_id} className={usermsg.msg_type+ " list-group-item"} onClick={() => this.handleClickUserMsg(usermsg.receiver_id)}>
+                                    <li key={usermsg.id}  className={usermsg.msg_type+ " list-group-item"}  data-send-id={usermsg.sender_id} data-receive-id={usermsg.receiver_id} onClick={() => this.handleClickUserMsg(usermsg.receiver_id,usermsg.sender_id)}>
                                      {this.checkMsgedUser(usermsg.msg_type,usermsg.msg_send_name,usermsg.msg_rec_name)}
                                     <span className="usermsg">{usermsg.send_msg}</span></li>
                                 )}
@@ -307,8 +313,8 @@ class UsersChat extends Component {
                             <ul className="list-group list-group-flush user_msgs">
                                 <li className="list-group-item" ref="selected_user_id">{this.handleSelectedUser()}</li>
                                 {this.state.selectedUserMsgs.map(usermsg =>
-                                    <li key={usermsg.id} data-user={usermsg.receiver_id} className="list-group-item">
-                                     <p className={usermsg.msg_type+"_message"}>{usermsg.send_msg}</p>
+                                    <li key={usermsg.id}  className="list-group-item">
+                                        {this.checkEmptyMsg(usermsg.send_msg,usermsg.msg_type)}
                                         {this.checkEmptyMsg(usermsg.reply_msg,usermsg.msg_type)}
                                     </li>
                                 )}

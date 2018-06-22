@@ -259,25 +259,25 @@ app.post('/api/sendMessage', function (req, res) {
 
 /* get all user messages*/
 app.get('/api/userMessages', function (req, res) {
-    const userId = req.query.user;
     const type = req.query.type;
     let queryCondition, orderWise;
     if (type === "all") {
-        queryCondition = 'senduser_id ="' + userId + '"';
+        const userId = req.query.user;
+        queryCondition = 'senduser_id ="' + userId + '" OR receiveduser_id ="' + userId + '"';
         orderWise = "DESC";
     } else {
-        queryCondition = 'receiveduser_id ="' + userId + '"';
+        const recId = req.query.rec_user;
+        const sendId = req.query.send_user;
+        queryCondition = 'receiveduser_id ="' + recId + '" AND senduser_id ="' + sendId + '" OR receiveduser_id ="' + sendId + '" AND senduser_id ="' + recId + '"';
         orderWise = "ASC";
     }
-    var sql = 'SELECT * FROM users_msg where senduser_id ="' + userId + '" OR receiveduser_id ="' + userId + '" ORDER BY id ' + orderWise + '';
-
+    var sql = 'SELECT * FROM users_msg where ' + queryCondition + ' ORDER BY id ' + orderWise + '';
+console.log(sql);
     con.query(sql, function (error, results) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'Msgs list.', status: "OK" });
     });
 });
-
-
 /* update reply Message to user*/
 app.post('/api/replyMessage', function (req, res) {
     const sendUser = req.body.user;
