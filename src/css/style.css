@@ -20,10 +20,10 @@ html, body {
   opacity:0.4;
   border:none;
 }
-form input.form-control.invalid{
+form input.form-control.invalid,form select.form-control.invalid{
   opacity:0.8;
   background-color:#fff !important;
-  color:red;
+  color:#000;
   border:1px solid red !important;
 }
 .login-banner form input.form-control::-webkit-input-placeholder,.login-banner form input.form-control:-moz-placeholder
@@ -343,6 +343,7 @@ label.checkobox input {
   position: absolute;
   opacity: 0;
   cursor: pointer;
+  left: 0px;
 }
 
 /* Create a custom checkbox */
@@ -411,7 +412,8 @@ p.task_status.completed{
 .list-group-item.no_border{
   border:none !important;
   padding:0;
-  margin-left:-50px;
+  margin-left:-30px;
+  margin-top: 10px;
 }
 .edit_lists.todo{
   left:35px !important;
@@ -672,4 +674,14 @@ ul.ul_tabs li.active{
 }
 .card-body .tabs_content{
   margin:10px;
+}
+
+label.checkobox input:checked{
+  text-decoration: line-through;
+}
+.react-datepicker-wrapper,.react-datepicker__input-container{
+  width:100% !important;
+}
+.react-datepicker__day--selected{
+  background-color: #00ACC1 !important;
 }

@@ -22,7 +22,8 @@ getTodayTask=()=>{
           const addedLists = userMenus[menuObj].added_lists;
           if (addedLists.length > 0) {
               return addedLists.map(function (item, i) {
-                  const createdDateTime = item.created_at;
+                //  const createdDateTime = item.created_at;
+                const createdDateTime = item.due_date;
                  /*  const createdDateArr = createdDateTime.split(' ');
                  const cday = createdDateArr[1].slice(0, -1) ;
                   const cmonth = createdDateArr[0] ;

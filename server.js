@@ -142,12 +142,16 @@ app.post('/api/addEditTodo', function (req, res) {
     const created_at = req.body.created_at;
     const action = req.body.taskAction;
     const rowId = req.body.editID;
-
+    const taskPriority = req.body.taskPriority ;
+    let taskDuedate = req.body.taskDuedate;
+    if(taskDuedate===""){
+        taskDuedate = "1970-00-00 00:00:00";
+    }
     let sql;
     if (action === "Add") {
-        sql = "INSERT INTO users_todo_lists (user_id, todo_name,todo_type,created_at,menu_id,todo_status) VALUES ('" + userID + "','" + taskName + "','" + taskTodo + "','" + created_at + "',0,0)";
+        sql = "INSERT INTO users_todo_lists (user_id, todo_name,todo_type,created_at,menu_id,todo_status,todo_priority,due_date) VALUES ('" + userID + "','" + taskName + "','" + taskTodo + "','" + created_at + "',0,0,'"+taskPriority+"','"+taskDuedate+"')";
     } else {
-        sql = "UPDATE users_todo_lists SET todo_name = '" + taskName + "' WHERE user_id = '" + userID + "' AND todo_type ='" + taskTodo + "' AND id= '" + rowId + "'";
+        sql = "UPDATE users_todo_lists SET todo_name = '" + taskName + "',todo_priority = '" + taskPriority + "',due_date = '" + taskDuedate + "' WHERE user_id = '" + userID + "' AND todo_type ='" + taskTodo + "' AND id= '" + rowId + "'";
     }
     con.query(sql, function (err, result) {
         if (err) throw err;
@@ -171,7 +175,6 @@ app.post('/api/addEditTodo', function (req, res) {
 /* get users added todolists*/
 app.post('/api/getUserTodoLists', function (req, res) {
     const userID = req.body.user;
-
     con.query('SELECT * FROM users_todo_lists WHERE user_id=? ', [userID], function (error, rows, fields) {
         if (error) throw error;
         if (rows.length != 0) {
@@ -192,8 +195,9 @@ app.post('/api/deleteTodo', function (req, res) {
     const userID = req.body.user;
     const taskType = req.body.taskTodo;
     const taskRowId = req.body.rowId;
-    con.query('DELETE FROM users_todo_lists WHERE user_id=? and id=? and todo_type=?', [userID, taskRowId, taskType], function (error, result) {
-
+    
+    const sql = "DELETE FROM users_todo_lists WHERE user_id='"+userID+"'  and id= '"+taskRowId+"' and todo_type='"+taskType+"' ";  
+    con.query(sql, function (error, result) {
         if (error) throw error;
         if (result.affectedRows >= 0) {
             data["status"] = "OK";
@@ -214,7 +218,10 @@ app.post('/api/updateTodoStatus', function (req, res) {
     const taskType = req.body.taskTodo;
     const taskRowId = req.body.rowId;
     const todoStatus = req.body.taskStatus;
-    const completed_at = req.body.completed_at;
+    let completed_at = req.body.completed_at;
+    if(completed_at==="0000-00-00 00:00:00"){
+        completed_at = "1970-01-01 00:00:00";
+    }
     var sql = "UPDATE users_todo_lists SET completed_at = '" + completed_at + "',todo_status = '" + todoStatus + "' WHERE id= '" + taskRowId + "'";
 
     con.query(sql, function (error, result) {

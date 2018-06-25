@@ -14,7 +14,29 @@ class UsersChat extends Component {
     }
     componentDidMount = () => {
         this.getAllUsers();
-        this.getAllUserMsgs();
+        this.handleUserMsgs();
+        const _this = this ;
+        setTimeout(function(){
+            _this.getAllUserMsgs();
+        },1000);
+    }
+    handleUserMsgs = () => {
+        var items = document.getElementsByClassName("user_messages");
+        let i;
+        //  console.log(items);
+        if (items[0] !== undefined) {
+            let lastSender = items[0].getAttribute('data-send-id'), lastReceiver = items[0].getAttribute('data-receive-id');
+            for (i = 0; i < items.length; i++) {
+                const sender = items[i].getAttribute('data-send-id');
+                const receiver = items[i].getAttribute('data-receive-id');
+                //console.log("receiver.." + receiver + "...lastSender.." + lastSender + "...sender.." + sender + "...lastReceiver.." + lastReceiver)
+                if (receiver === lastSender && sender === lastReceiver && sender!==lastSender && receiver!==lastReceiver) {
+                    items[i-1].remove();
+                }
+                lastSender = sender;
+                lastReceiver = receiver;
+            }
+        }
     }
     getAllUsers = () => {
         const _this = this;
@@ -46,47 +68,46 @@ class UsersChat extends Component {
         }).then(function (response) {
             const responsedata = response.data.data;
             const usersData = _this.state.otherUsers;
-           // const allMsgedUsers = [];
-           const sendUsers = [];
-           const receiveUsers = [];
+            // const allMsgedUsers = [];
+            const sendUsers = [];
+            const receiveUsers = [];
             responsedata.map(function (item, i) {
                 const rec_uid = item.receiveduser_id;
                 const send_uid = item.senduser_id;
                 const loggedUser = localStorage.getItem('loggedUserName');
-                let recName,sendName = '';
+                let recName, sendName = '';
                 let lastMsgBy = '';
                 let msgType = '';
-                
+
                 if (receiveUsers.indexOf(rec_uid) === -1 || sendUsers.indexOf(send_uid) === -1) {
-                    if(parseInt(rec_uid)!==parseInt(userID)){
+                    if (parseInt(rec_uid) !== parseInt(userID)) {
                         const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(rec_uid);
                         recName = usersData[findUserRowIndex].name;
-                        sendName = loggedUser ;
+                        sendName = loggedUser;
                         lastMsgBy = "You:";
-                        msgType  = "send";
-                    }else{
-                        recName   = localStorage.getItem('loggedUserName');
+                        msgType = "send";
+                    } else {
+                        recName = localStorage.getItem('loggedUserName');
                         const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(send_uid);
-                        if(usersData[findUserRowIndex]!==undefined){
+                        if (usersData[findUserRowIndex] !== undefined) {
                             sendName = usersData[findUserRowIndex].name;
                         }
-                        msgType  = "receive";
+                        msgType = "receive";
                     }
-                        userMsgs.push({ "send_msg": lastMsgBy + " " + item.send_msg, "receiver_id": rec_uid,"sender_id": send_uid, "msg_rec_name": recName,"msg_send_name":sendName, "id": item.id,"msg_type":msgType });
+                    userMsgs.push({ "send_msg": lastMsgBy + " " + item.send_msg, "receiver_id": rec_uid, "sender_id": send_uid, "msg_rec_name": recName, "msg_send_name": sendName, "id": item.id, "msg_type": msgType });
                 }
                 // allMsgedUsers.push(rec_uid);
                 sendUsers.push(send_uid);
                 receiveUsers.push(rec_uid);
-               
+
             });
             _this.setState({ userMsgs: userMsgs });
-            console.log(_this.state.userMsgs);
         })
             .catch(function (error) {
                 console.log(error);
             });
     }
-    
+
     handleClickChatBox = (ele) => {
         const target = ele.target || ele.srcElement;
         const checkActive = (' ' + target.className + ' ').indexOf('fa-chevron-up') > -1;
@@ -122,6 +143,7 @@ class UsersChat extends Component {
                 userMsgSection.style.display = "none";
                 receiveMsgSection.style.display = "block";
                 this.getAllUserMsgs();
+                this.handleUserMsgs();
             }
         }
     }
@@ -169,8 +191,8 @@ class UsersChat extends Component {
             const receiveUser = this.refs.selected_user_id.getAttribute("data-ruser");
             const lastMsgType = this.refs.selected_user_id.getAttribute("data-last-msg-status");
             let type = "reply";
-            if(parseInt(lastMsgType)===0){
-                    type = "send";
+            if (parseInt(lastMsgType) === 0) {
+                type = "send";
             }
             const response = await fetch('/api/replyMessage',
                 {
@@ -194,7 +216,7 @@ class UsersChat extends Component {
             }
         }
     }
-    handleClickUserMsg = async (recid,sendid) => {
+    handleClickUserMsg = async (recid, sendid) => {
         const userMsgs = [];
         const _this = this;
         axios.get('/api/userMessages', {
@@ -210,27 +232,27 @@ class UsersChat extends Component {
             responsedata.map(function (item, i) {
                 const rec_uid = item.receiveduser_id;
                 const send_uid = item.senduser_id;
-                let recName,sendName = "",msgType,receiverID;
+                let recName, sendName = "", msgType, receiverID;
                 const userID = _this.props.states.userRowIndex;
                 const loggedUser = localStorage.getItem('loggedUserName');
-                if(parseInt(rec_uid)!==parseInt(userID) ){
+                if (parseInt(rec_uid) !== parseInt(userID)) {
                     const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(rec_uid);
                     recName = usersData[findUserRowIndex].name;
-                    sendName = loggedUser ;
-                    msgType  = "send";
+                    sendName = loggedUser;
+                    msgType = "send";
                     receiverID = rec_uid;
 
-                }else{
-                    recName   = localStorage.getItem('loggedUserName');
+                } else {
+                    recName = localStorage.getItem('loggedUserName');
                     const findUserRowIndex = usersData.map(function (e) { return e.id; }).indexOf(send_uid);
-                    if(usersData[findUserRowIndex]!==undefined){
+                    if (usersData[findUserRowIndex] !== undefined) {
                         sendName = usersData[findUserRowIndex].name;
                     }
-                    msgType  = "receive";
-                    receiverID = send_uid ;
+                    msgType = "receive";
+                    receiverID = send_uid;
                 }
                 const msgStatus = item.msg_status;
-                userMsgs.push({ "send_msg": item.send_msg, "reply_msg": item.reply_msg, "receiver_id": receiverID, "msg_rec_name": recName,"msg_send_name":sendName,"id": item.id, "msg_status": msgStatus, "send_at": item.created_at,"msg_type":msgType });
+                userMsgs.push({ "send_msg": item.send_msg, "reply_msg": item.reply_msg, "receiver_id": receiverID, "msg_rec_name": recName, "msg_send_name": sendName, "id": item.id, "msg_status": msgStatus, "send_at": item.created_at, "msg_type": msgType });
                 allMsgedUsers.push(receiverID);
             });
             _this.setState({ selectedUserMsgs: userMsgs });
@@ -249,25 +271,25 @@ class UsersChat extends Component {
         const userMsgs = this.state.selectedUserMsgs;
         if (userMsgs.length > 0) {
             this.refs.selected_user_id.setAttribute('data-ruser', userMsgs[0].receiver_id);
-            this.refs.selected_user_id.setAttribute('data-last-msg-status', userMsgs[userMsgs.length-1].msg_status);
+            this.refs.selected_user_id.setAttribute('data-last-msg-status', userMsgs[userMsgs.length - 1].msg_status);
             return userMsgs[0].msger_name;
         }
     }
-    checkEmptyMsg = (msg,type) => {
+    checkEmptyMsg = (msg, type) => {
         if (msg !== "") {
-            return <p className={type+"_message"}>{msg}</p>;
+            return <p className={type + "_message"}>{msg}</p>;
         }
     }
-    checkMsgedUser = (checkmsgType,senderName,receiverName)=>{
-        let displayUser,addClass ;
-        if(checkmsgType==="send"){
+    checkMsgedUser = (checkmsgType, senderName, receiverName) => {
+        let displayUser, addClass;
+        if (checkmsgType === "send") {
             displayUser = receiverName;
-            addClass  = "sender";
-        }else{
+            addClass = "sender";
+        } else {
             displayUser = senderName;
-            addClass   ="receiver"
+            addClass = "receiver"
         }
-        return   <p className={addClass+" username"}>{displayUser}</p>;
+        return <p className={addClass + " username"}>{displayUser}</p>;
     }
     render() {
         return (
@@ -303,9 +325,9 @@ class UsersChat extends Component {
                         <section ref="receiveMsgSection">
                             <ul className="list-group list-group-flush msg_lists">
                                 {this.state.userMsgs.map(usermsg =>
-                                    <li key={usermsg.id}  className={usermsg.msg_type+ " list-group-item"}  data-send-id={usermsg.sender_id} data-receive-id={usermsg.receiver_id} onClick={() => this.handleClickUserMsg(usermsg.receiver_id,usermsg.sender_id)}>
-                                     {this.checkMsgedUser(usermsg.msg_type,usermsg.msg_send_name,usermsg.msg_rec_name)}
-                                    <span className="usermsg">{usermsg.send_msg}</span></li>
+                                    <li key={usermsg.id} className={usermsg.msg_type + " list-group-item user_messages"} data-send-id={usermsg.sender_id} data-receive-id={usermsg.receiver_id} onClick={() => this.handleClickUserMsg(usermsg.receiver_id, usermsg.sender_id)}>
+                                        {this.checkMsgedUser(usermsg.msg_type, usermsg.msg_send_name, usermsg.msg_rec_name)}
+                                        <span className="usermsg">{usermsg.send_msg}</span></li>
                                 )}
                             </ul>
                         </section>
@@ -313,9 +335,9 @@ class UsersChat extends Component {
                             <ul className="list-group list-group-flush user_msgs">
                                 <li className="list-group-item" ref="selected_user_id">{this.handleSelectedUser()}</li>
                                 {this.state.selectedUserMsgs.map(usermsg =>
-                                    <li key={usermsg.id}  className="list-group-item">
-                                        {this.checkEmptyMsg(usermsg.send_msg,usermsg.msg_type)}
-                                        {this.checkEmptyMsg(usermsg.reply_msg,usermsg.msg_type)}
+                                    <li key={usermsg.id} className="list-group-item">
+                                        {this.checkEmptyMsg(usermsg.send_msg, usermsg.msg_type)}
+                                        {this.checkEmptyMsg(usermsg.reply_msg, usermsg.msg_type)}
                                     </li>
                                 )}
                             </ul>

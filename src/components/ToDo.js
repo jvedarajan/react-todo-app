@@ -40,18 +40,42 @@ class ToDo extends Component {
             return (
                 <li className="list-group-item no_border" key={index}>
                     <label className="checkobox todo">{anObjectMapped.title}<input type="checkbox" data-task={todoName} data-row-id={anObjectMapped.id} value={index} onChange={((e) => _this.handleCheckboxTick(e))} {...addChecked} /><span className="checkmark"></span>
-                        <span className={disabledClass + " edit_lists todo"} onClick={this.handleEditListName(todoName, index,anObjectMapped.id)}><i className="fa fa-pencil-square-o" aria-hidden="true"></i></span> <span className="created_listtime">{anObjectMapped.created_at}</span>
+                        <span className={disabledClass + " edit_lists todo"} onClick={() => _this.handleEditListName(todoName, index, anObjectMapped.id)}><i className="fa fa-pencil-square-o" aria-hidden="true"></i></span> <span className="created_listtime">{_this.getDateFormatChange(anObjectMapped.created_at)}</span>
                     </label></li>
             );
-        })
+        });
     }
-    handleCheckboxTick = clickElem => {
+    getDateFormatChange = (date) => {
+        if (date === "1970-01-01 00:00:00") {
+            return '-';
+        }
+        if (date !== '' && date !== undefined && date !== null) {
+            const dateTimeArr = date.split(' ');
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const dateOnly = dateTimeArr[0];
+            const dateArr = dateOnly.split("-");
+            const intMonth = months[dateArr[1] - 1];
+            const timeOnly = dateTimeArr[1];
+            const timeArr  = timeOnly.split(":");
+            let section = "AM";
+            const h = timeArr[0];
+            const m = timeArr[1];
+            if(h>=12){
+                section = "PM";
+            }
+            return intMonth + ' ' + dateArr[2] + ',' + dateArr[0]+" "+h+":"+m+" "+section;
+        }
+    }
+    handleCheckboxTick = (clickElem) => {
+
         const getDate = this.props.states.datetime;
         const val = clickElem.target.value;
+
         const taskSelected = clickElem.target.getAttribute("data-task");
         const rowId = clickElem.target.getAttribute("data-row-id");
         //const userInformation = this.props.states.allUsersInfo;
         let setStatus, setCompletedTime, setDBstatus;
+
         if (clickElem.target.checked) {
             setStatus = "completed";
             setCompletedTime = getDate;
@@ -75,7 +99,7 @@ class ToDo extends Component {
         }
         // }
     }
-    handleEditListName = (edittodo, row,rowid) => {
+    handleEditListName = (edittodo, row, rowid) => {
         const userMenus = this.state.menus;
         const _this = this;
         return function () {
@@ -85,7 +109,7 @@ class ToDo extends Component {
             const editedRowMenus = userMenus[edittodo];
             if (editedRowMenus.menuname === edittodo) {
                 _this.refs.edit_task.value = editedRowMenus.added_lists[row].title;
-                _this.refs.edit_task.setAttribute('data-row-id',rowid);
+                _this.refs.edit_task.setAttribute('data-row-id', rowid);
                 _this.refs.edit_index.value = row;
                 _this.refs.edit_todo.value = edittodo;
             }
@@ -129,9 +153,9 @@ class ToDo extends Component {
             }
             //}
             // localStorage.setItem('userInfo', JSON.stringify(userInformation));
-            this.callApiEditTodo(taskTodo,taskEdited,rowID);
+            this.callApiEditTodo(taskTodo, taskEdited, rowID);
             this.setState({ menus: menus });
-           
+
         }
         else {
             taskInput.classList.add('invalid');

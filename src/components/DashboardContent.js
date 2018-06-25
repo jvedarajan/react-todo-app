@@ -43,15 +43,16 @@ class DashboardContent extends Component {
         });
     }
     getDateFormatChange = (date)=>{
+        if(date==="1970-01-01 00:00:00"){
+            return '-';
+        }
         if(date!=='' && date!==undefined && date!==null){
-            /* const dateArr     = date.split(' ');
+           const dateTimeArr     = date.split(' ');
            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const dateArr     = date.split(' ');
-            const month  = dateArr[0] ;
-            const intMonth = months.indexOf(month)+1;
-            return  dateArr[1].slice(0, -1)+'/'+intMonth+'/'+dateArr[2]+' '+dateArr[4]+dateArr[6];
-            */
-           return date;
+            const dateOnly  = dateTimeArr[0] ;
+            const dateArr =  dateOnly.split("-");
+            const intMonth = months[dateArr[1]-1];
+            return  dateArr[2]+'/'+intMonth+'/'+dateArr[0];
         }
     }
     render() {

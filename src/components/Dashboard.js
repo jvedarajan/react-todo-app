@@ -7,6 +7,14 @@ import MyDay from "./MyDay";
 import ToDo from "./ToDo";
 import TasksComponent from "./TasksComponent";
 import UsersChatComponent from "./UsersChatComponent";
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
+const w = moment().weekday();
+const daysToSubtract = ((w + 3 + Math.floor(24/16)))%7 ;
+const beginningOfWeek = moment().add(-daysToSubtract, 'days');
+const endOfWeek = moment().add(14-daysToSubtract, 'days');
+//console.log(beginningOfWeek.format('YYYY-MM-DD h:mm:ss'));
 document.onclick = function () {
         const thisElement = document.getElementById("newlist");
         if (thisElement) {
@@ -14,29 +22,35 @@ document.onclick = function () {
                 thisElement.nextSibling.classList.add('hide');
         }
 }
-const newListAdded = [];
 class Dashboard extends React.Component {
-        constructor(props){
+        constructor(props) {
                 super(props);
                 const propsVals = this.props.states;
-                this.state = { datetime: this.getCurrentTime(),datetime2: this.getCurrentTime('db'), menus: propsVals.menus, userRowIndex: propsVals.userRowIndex, allUsersInfo: propsVals.allUsersInfo, loggedUser: propsVals.loggedUser, loggedUserName: propsVals.loggedUserName };
-              } 
-        state = {};
-        componentWillMount  =() =>{ 
-                const propsVals = this.props.states;
-                // this.getCustomTasks();
-                this.callApigetCustomMenus(propsVals.userRowIndex);
-                //this.getTime();
+                this.state = { "newListAdded": [], dueDate: moment(), datetime: this.getCurrentTime(), datetime2: this.getCurrentTime('db'), menus: propsVals.menus, userRowIndex: propsVals.userRowIndex, allUsersInfo: propsVals.allUsersInfo, loggedUser: propsVals.loggedUser, loggedUserName: propsVals.loggedUserName };
+
+                this.handleChange = this.handleChange.bind(this);
         }
-       
+        handleChange(date) {
+                //  let formattedDate = this.formatDate(date);
+                this.setState({
+                        dueDate: date
+                });
+        }
+
+        componentDidMount = () => {
+                const propsVals = this.props.states;
+                //  this.getCustomTasks();
+                this.callApigetCustomMenus(propsVals.userRowIndex);
+        }
         getCustomTasks = () => {
+                const newListAdded = [];
                 const getMenus = this.state.menus;
-                console.log(getMenus);
                 Object.keys(getMenus).map(function (menuObject, ind) {
                         if (getMenus[menuObject].type === 'custom') {
                                 newListAdded.push({ "path": "/" + getMenus[menuObject].menuname.toLowerCase(), "component": "TasksComponent", "task": getMenus[menuObject].menuname });
                         }
                 });
+                this.setState({ newListAdded: newListAdded });
         }
         getTime = () => {
                 this.setState({ datetime: this.getCurrentTime() });
@@ -48,7 +62,7 @@ class Dashboard extends React.Component {
                 const m = this.checkTime(today.getMinutes());
                 const s = this.checkTime(today.getSeconds());
                 const date = this.checkTime(today.getDate());
-                const month = this.checkTime(today.getMonth()+1);
+                const month = this.checkTime(today.getMonth() + 1);
                 const year = today.getFullYear();
                 if (passdb) {
                         const currentDateTime = year + "-" + month + "-" + date + " " + h + ":" + m + ":" + s;
@@ -62,7 +76,7 @@ class Dashboard extends React.Component {
                                 }
                         }
                         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                        const displaydatetime = months[Math.round(month)-1] + " " + date + ", " + year + "  " + h + ":" + m + "  " + setPeriod;
+                        const displaydatetime = months[Math.round(month) - 1] + " " + date + ", " + year + "  " + h + ":" + m + "  " + setPeriod;
                         return displaydatetime;
                 }
         }
@@ -79,18 +93,15 @@ class Dashboard extends React.Component {
         /* Display List of Menu Items*/
         getMenuData = () => {
                 const userMenus = this.state.menus;
-                const userMenusArr = Object.keys(userMenus).map(function (i) {
-                        return userMenus[i];
-                });
-                return userMenusArr.map(menus => {
-                        const listsLength = menus.added_lists.length;
+                return Object.keys(userMenus).map(function (menus, i) {
+                        const listsLength = userMenus[menus].added_lists.length;
                         let countShow;
                         if (listsLength === 0) {
                                 countShow = '';
                         } else {
                                 countShow = listsLength;
                         }
-                        return <li key={menus.display_order} className="menu" data-menu={menus.menuname} data-display={menus.display_order}><i className={menus.iconclass} aria-hidden="true"></i>   <NavLink to={menus.path}><span className="menu_itemname">{menus.menuname}</span> <span className="menu_itemcount">{countShow}</span></NavLink></li>;
+                        return <li key={userMenus[menus].menuname} className="menu" data-menu={userMenus[menus].menuname} data-display={userMenus[menus].display_order}><i className={userMenus[menus].iconclass} aria-hidden="true"></i>   <NavLink to={userMenus[menus].path}><span className="menu_itemname">{userMenus[menus].menuname}</span> <span className="menu_itemcount">{countShow}</span></NavLink></li>;
                 });
         }
         handleAddNew = (e) => {
@@ -147,58 +158,91 @@ class Dashboard extends React.Component {
                 const menus = this.state.menus;
                 const taskIndex = this.refs.edit_index.value;
                 const taskRow = this.refs.edit_row.value;
+                const taskPriorityElem = this.refs.task_priority;
+                const taskDuedateElem = this.refs.due_date;
+                const taskPriority = taskPriorityElem.value ;
+                const duedate = this.state.dueDate;
+                let taskDuedate;
+                if(duedate!=="" && duedate!==undefined && duedate!==null){
+                         taskDuedate  = this.state.dueDate.format("YYYY-MM-DD")+" 23:59:59" ;
+                }else{
+                        taskDuedate  = "";
+                        this.setState({dueDate:moment()});
+                }
+               
                 //  const userInformation = this.state.allUsersInfo;
                 const menusRow = menus[taskTodo];
-                if (taskName !== "" && taskName.length > 10) {
+                if (taskName !== "" && taskName.length > 10 && taskPriority!=="") {
                         taskIPElem.classList.remove('invalid');
                         taskIPElem.nextElementSibling.classList.add('hide');
                         if (menusRow.menuname === taskTodo) {
                                 if (taskAction === "Edit") {
                                         menusRow.added_lists[taskIndex].title = taskName;
+                                        //menusRow.added_lists[taskIndex].due_date = duedate;
+                                        menusRow.added_lists[taskIndex].priority = taskPriority;
                                 }
                                 if (taskAction === "Add") {
-                                        const createNewTask = { title: taskName, created_at: this.getCurrentTime(), status: "pending", completed_at: "" };
+                                        const createNewTask = { title: taskName, created_at: this.getCurrentTime("db"), status: "pending", completed_at: "",due_date:duedate,priority:taskPriority };
                                         menusRow.added_lists.push(createNewTask);
                                 }
                         }
                         // localStorage.setItem('userInfo', JSON.stringify(userInformation));
-                        this.callApiAddEditTodo(taskTodo, taskName,taskAction,taskRow);
+                        const passData = {taskTodo:taskTodo,taskName:taskName,taskAction:taskAction,editID:taskRow,taskPriority:taskPriority,taskDuedate:taskDuedate};
+                        this.callApiAddEditTodo(passData);
                         this.setState({ menus: menus });
                         //   this.handleClickCloseModal();
                 } else {
                         taskIPElem.classList.add('invalid');
                         taskIPElem.nextElementSibling.classList.remove('hide');
                 }
+                if(taskPriority===""){
+                        taskPriorityElem.classList.add('invalid');
+                        taskPriorityElem.nextElementSibling.classList.remove('hide');
+                        taskIPElem.classList.remove('invalid');
+                        taskIPElem.nextElementSibling.classList.add('hide');
+                }else{
+                        taskPriorityElem.classList.remove('invalid');
+                        taskPriorityElem.nextElementSibling.classList.add('hide');  
+                }
+                if(taskDuedate===""){
+                       // taskDuedateElem.classList.add('invalid');
+                       // taskDuedateElem.nextElementSibling.classList.remove('hide');
+                }else{
+                   //     taskDuedateElem.classList.remove('invalid');
+                    //    taskDuedateElem.nextElementSibling.classList.add('hide');  
+                }
         }
         handleCheckInput = (event) => {
-                const taskInput = this.refs.task_name;
-                const taskInputVal = taskInput.value;
-                if (taskInputVal === "") {
-                        taskInput.classList.add('invalid');
-                        taskInput.nextElementSibling.classList.remove('hide');
+              //  const taskInput = this.refs.task_name;
+              //  const taskInputVal = taskInput.value;
+                const target = event.target || event.srcElement;
+                if (target.value === "") {
+                        target.classList.add('invalid');
+                        target.nextElementSibling.classList.remove('hide');
                 } else {
-                        taskInput.classList.remove('invalid');
-                        taskInput.nextElementSibling.classList.add('hide');
+                        target.classList.remove('invalid');
+                        target.nextElementSibling.classList.add('hide');
                 }
         }
         handleTaskDelete = () => {
                 const taskType = this.refs.delete_task_type.value;
                 const deleteIndex = this.refs.delete_task_index.value;
                 const deleteRow = this.refs.delete_task_row.value;
-               const menus = this.state.menus;
-               // const userInformation = this.state.allUsersInfo;
-                                var lists = menus[taskType].added_lists;
-                                var newArr = [];
-                                for (var i = 0; i < lists.length; i++) {
-                                        if (i !== deleteIndex) {
-                                                newArr.push(lists[i]);
-                                        }
-                                }
-                                delete menus[taskType].added_lists;
-                                menus[taskType].added_lists = newArr;
-             //   localStorage.setItem('userInfo', JSON.stringify(userInformation));
-                this.callApiDeleteTodo(taskType,deleteRow,deleteIndex);  
-                this.setState({ menus: menus });
+                const menus = this.state.menus;
+                // const userInformation = this.state.allUsersInfo;
+                let lists = menus[taskType].added_lists;
+                /*  var newArr = [];
+                  for (var i = 0; i < lists.length; i++) {
+                          if (i !== deleteIndex) {
+                                  newArr.push(lists[i]);
+                          }
+                  }
+                  delete menus[taskType].added_lists;
+                  menus[taskType].added_lists = newArr;
+                  this.setState({ menus: menus });*/
+                //   localStorage.setItem('userInfo', JSON.stringify(userInformation));
+                menus[taskType].added_lists = [];
+                this.callApiDeleteTodo(taskType, deleteRow, deleteIndex);
         }
         handleClickLogout = () => {
                 localStorage.removeItem('loggedUser');
@@ -255,6 +299,7 @@ class Dashboard extends React.Component {
                         ipelement.classList.remove('hide');
                         ipelement.nextSibling.classList.add('hide');
                         _this.getMenuData();
+                        //_this.getCustomTasks();
 
                 } else {
                         alert("Error Occured Try again later");
@@ -291,22 +336,27 @@ class Dashboard extends React.Component {
                                 createMenuObj[key] = createJSON;
                                 const newMenusAdd = Object.assign({}, getStateMenus, createMenuObj);
                                 _this.setState({ menus: newMenusAdd });
+
                         });
+                        //  console.log(_this.state.menus);
                 }
                 this.callApiGetTodoLists();
         }
-        callApiAddEditTodo = async (taskTodo, taskName,taskAction,editID) => {
+        callApiAddEditTodo = async (data) => {
+                //console.log(data);
                 const _this = this;
-                const response = await fetch('/api/addEditTodo',
+               const response = await fetch('/api/addEditTodo',
                         {
                                 method: 'POST',
                                 body: JSON.stringify({
                                         user: _this.state.userRowIndex,
-                                        taskTodo: taskTodo,
-                                        taskName: taskName,
-                                        taskAction:taskAction,
+                                        taskTodo: data.taskTodo,
+                                        taskName: data.taskName,
+                                        taskAction: data.taskAction,
                                         created_at: _this.getCurrentTime('dbdateformat'),
-                                        editID:editID
+                                        editID: data.editID,
+                                        taskPriority:data.taskPriority,
+                                        taskDuedate:data.taskDuedate
                                 }),
                                 headers: { "Content-Type": "application/json" }
                         });
@@ -314,14 +364,14 @@ class Dashboard extends React.Component {
                 if (response.status !== 200) throw Error(body.message);
                 if (body.status === "OK") {
                         _this.handleClickCloseModal();
-                        if(taskAction==="Add"){
-                               _this.refs.edit_row = body.data ;
-                               _this.refs.delete_task_row = body.data ;
+                        if (data.taskAction === "Add") {
+                                _this.refs.edit_row = body.data;
+                                _this.refs.delete_task_row = body.data;
                         }
-                      
+
                 }
         }
-        callApiDeleteTodo = async (taskTodo,rowId,deleteIndex) => {
+        callApiDeleteTodo = async (taskTodo, rowId, deleteIndex) => {
                 const _this = this;
                 const response = await fetch('/api/deleteTodo',
                         {
@@ -329,18 +379,19 @@ class Dashboard extends React.Component {
                                 body: JSON.stringify({
                                         user: _this.state.userRowIndex,
                                         taskTodo: taskTodo,
-                                        rowId:rowId
+                                        rowId: rowId
                                 }),
                                 headers: { "Content-Type": "application/json" }
                         });
                 const body = await response.json();
                 if (response.status !== 200) throw Error(body.message);
                 if (body.status === "OK") {
+                        _this.callApiGetTodoLists("callback");
                         _this.handleClickCloseModal();
-                                 
+
                 }
         }
-        callApiGetTodoLists = async () => {
+        callApiGetTodoLists = async (callback) => {
                 const _this = this;
                 const response = await fetch('/api/getUserTodoLists',
                         {
@@ -357,17 +408,29 @@ class Dashboard extends React.Component {
                         const userTodos = _this.state.menus;
                         getTodoLists.map(todos => {
                                 const getTodoType = todos.todo_type;
+                                if (callback) {
+                                        userTodos[getTodoType].added_lists = [];
+                                }
                                 let status = todos.todo_status;
                                 if (status === 0) {
-                                    status = "pending";
-                                }else if(status===1){
-                                        status = "completed";    
+                                        status = "pending";
+                                } else if (status === 1) {
+                                        status = "completed";
                                 }
-                                const addTodoListObj = { "status": status, "title": todos.todo_name, "task": todos.todo_type, "created_at": todos.created_at,"id":todos.id,"completed_at": todos.completed_at };
+                                const addTodoListObj = { "status": status, "title": todos.todo_name, "task": todos.todo_type, "created_at": todos.created_at, "id": todos.id, "completed_at": todos.completed_at,"due_date": todos.due_date};
                                 userTodos[getTodoType].added_lists.push(addTodoListObj);
                         });
                         _this.setState({ menus: userTodos });
                 }
+        }
+        handleDynamicComponent = () => {
+                const getMenus = this.state.menus;
+                const _this = this;
+                return Object.keys(getMenus).map(function (menuObject, ind) {
+                        if (getMenus[menuObject].menuname !== 'To-Do' && getMenus[menuObject].menuname !== "My-Day" && getMenus[menuObject].menuname !== "Dashboard") {
+                                return <Route key={getMenus[menuObject].path} path={getMenus[menuObject].path} render={(props) => <TasksComponent {...props} states={_this.state} taskType={getMenus[menuObject].menuname} />} />
+                        }
+                });
         }
         render() {
                 //const renderComponentMenus = this.state.menus;
@@ -412,18 +475,11 @@ class Dashboard extends React.Component {
                                                         <Route path="/dashboard" render={(props) => <DashboardContent {...props} states={this.state} />} />
                                                         <Route path="/myday" render={(props) => <MyDay {...props} states={this.state} />} />
                                                         <Route path="/todo" render={(props) => <ToDo {...props} states={this.state} />} />
-                                                        <Route path="/groceries" render={(props) => <TasksComponent {...props} states={this.state} taskType='Groceries' />} />
-                                                        <Route path="/work" render={(props) => <TasksComponent {...props} states={this.state} taskType='Work' />} />
-                                                        <Route path="/watchmovies" render={(props) => <TasksComponent {...props} states={this.state} taskType='Movies To Watch' />} />
-                                                        <Route path="/family" render={(props) => <TasksComponent {...props} states={this.state} taskType='Family' />} />
-                                                        <Route path="/travel" render={(props) => <TasksComponent {...props} states={this.state} taskType='Travel' />} />
                                                         <Switch>
-                                                                {newListAdded.map(route => (
-                                                                        <Route key={route.path} path={route.path} render={(props) => <TasksComponent {...props} states={this.state} taskType={route.task} />} />
-                                                                ))}
+                                                                {this.handleDynamicComponent()}
                                                         </Switch>
                                                 </div>
-                                                <UsersChatComponent  states={this.state}/>
+                                                <UsersChatComponent states={this.state} />
                                         </div>
                                 </div>
                                 <div className="modal" id="modalTask" role="dialog" ref="modalTask">
@@ -441,6 +497,25 @@ class Dashboard extends React.Component {
                                                                                 <label><span id="task_action" ref="task_action"></span> Task</label>
                                                                                 <input type="text" className="form-control" ref="task_name" name="task_name" id="task_name" onChange={(e) => this.handleCheckInput(e)} />
                                                                                 <span className="error hide">Enter valid Task min 10 chars</span>
+                                                                        </div>
+                                                                        <div className="form-group">
+                                                                                <label>Due Date</label>
+                                                                                <DatePicker className="form-control" minDate={new
+                                                                                        Date()} maxDate={new Date(endOfWeek)}
+                                                                                        selected={this.state.dueDate}
+                                                                                        onChange={this.handleChange} ref="due_date"
+                                                                                />
+                                                                                <span className="error hide">Please Select Date</span>
+                                                                        </div>
+                                                                        <div className="form-group">
+                                                                                <label>Priority</label>
+                                                                                <select className="form-control" ref="task_priority" id="task_priority" onChange={(e) => this.handleCheckInput(e)}>
+                                                                                        <option value="">Select</option>
+                                                                                        <option value="1">Low</option>
+                                                                                        <option value="2">Medium</option>
+                                                                                        <option value="3">High</option>
+                                                                                </select>
+                                                                                <span className="error hide">Please Select Priority</span>
                                                                         </div>
                                                                         <input type="hidden" id="task_type" name="task_type" ref="task_type" />
                                                                         <input type="hidden" id="edit_index" name="edit_index" ref="edit_index" />
