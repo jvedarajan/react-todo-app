@@ -682,6 +682,19 @@ label.checkobox input:checked{
 .react-datepicker-wrapper,.react-datepicker__input-container{
   width:100% !important;
 }
-.react-datepicker__day--selected{
+.react-datepicker__day--selected,.react-datepicker__header{
   background-color: #00ACC1 !important;
+ 
+}
+.react-datepicker__current-month, .react-datepicker-time__header,.react-datepicker__day-name{
+  color:#fff !important;
+}
+.react-datepicker__navigation--next{
+  border-left-color:#fff !important;
+}
+.react-datepicker__navigation--previous{
+  border-right-color:#fff !important;
+}
+.react-datepicker{
+  border: 1px solid #ddd;
 }

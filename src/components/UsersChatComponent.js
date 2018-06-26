@@ -31,7 +31,7 @@ class UsersChat extends Component {
                 const receiver = items[i].getAttribute('data-receive-id');
                 //console.log("receiver.." + receiver + "...lastSender.." + lastSender + "...sender.." + sender + "...lastReceiver.." + lastReceiver)
                 if (receiver === lastSender && sender === lastReceiver && sender!==lastSender && receiver!==lastReceiver) {
-                    items[i-1].remove();
+                    items[i].remove();
                 }
                 lastSender = sender;
                 lastReceiver = receiver;

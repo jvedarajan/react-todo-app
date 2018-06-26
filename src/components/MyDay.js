@@ -24,12 +24,14 @@ getTodayTask=()=>{
               return addedLists.map(function (item, i) {
                 //  const createdDateTime = item.created_at;
                 const createdDateTime = item.due_date;
-                 /*  const createdDateArr = createdDateTime.split(' ');
-                 const cday = createdDateArr[1].slice(0, -1) ;
+                //console.log(dateArr[0]);
+               /*   const createdDateArr = createdDateTime.split(' ');
+                  const cday = createdDateArr[1].slice(0, -1) ;
                   const cmonth = createdDateArr[0] ;
                   const cyear  = createdDateArr[2] ; */
                   var patt = new RegExp(dateArr[0]);
                   var checkDate = patt.test(createdDateTime);
+    
                  // if(day===cday && month===cmonth && year===cyear){
                    if(checkDate){
                     let addChecked = '';

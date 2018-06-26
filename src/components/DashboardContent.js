@@ -43,7 +43,7 @@ class DashboardContent extends Component {
         });
     }
     getDateFormatChange = (date)=>{
-        if(date==="1970-01-01 00:00:00"){
+        if(date==="1970-01-01 00:00:00" || date==="0000-00-00 00:00:00"){
             return '-';
         }
         if(date!=='' && date!==undefined && date!==null){

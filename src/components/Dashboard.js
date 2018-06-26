@@ -10,6 +10,9 @@ import UsersChatComponent from "./UsersChatComponent";
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
+
+
+
 const w = moment().weekday();
 const daysToSubtract = ((w + 3 + Math.floor(24/16)))%7 ;
 const beginningOfWeek = moment().add(-daysToSubtract, 'days');
@@ -245,10 +248,9 @@ class Dashboard extends React.Component {
                 this.callApiDeleteTodo(taskType, deleteRow, deleteIndex);
         }
         handleClickLogout = () => {
-                localStorage.removeItem('loggedUser');
-                localStorage.removeItem('userRow');
-                //  return <Redirect to='/'/>; 
-                window.location.href = "http://localhost:3000";
+                localStorage.removeItem('loggedUserID');
+                localStorage.removeItem('loggedUserName');
+                this.props.history.push('/');
         }
         handleShowSideMenu = (elem) => {
                 const displayType = this.refs.menu_icon.getAttribute("data-display");
@@ -417,7 +419,7 @@ class Dashboard extends React.Component {
                                 } else if (status === 1) {
                                         status = "completed";
                                 }
-                                const addTodoListObj = { "status": status, "title": todos.todo_name, "task": todos.todo_type, "created_at": todos.created_at, "id": todos.id, "completed_at": todos.completed_at,"due_date": todos.due_date};
+                                const addTodoListObj = { "status": status, "title": todos.todo_name, "task": todos.todo_type, "created_at": todos.created_at, "id": todos.id, "completed_at": todos.completed_at,"due_date": todos.due_date,"priority":todos.todo_priority};
                                 userTodos[getTodoType].added_lists.push(addTodoListObj);
                         });
                         _this.setState({ menus: userTodos });
@@ -503,7 +505,7 @@ class Dashboard extends React.Component {
                                                                                 <DatePicker className="form-control" minDate={new
                                                                                         Date()} maxDate={new Date(endOfWeek)}
                                                                                         selected={this.state.dueDate}
-                                                                                        onChange={this.handleChange} ref="due_date"
+                                                                                        onChange={this.handleChange} ref="due_date" id="due_date"
                                                                                 />
                                                                                 <span className="error hide">Please Select Date</span>
                                                                         </div>
