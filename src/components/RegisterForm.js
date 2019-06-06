@@ -10,27 +10,27 @@ class RegisterForm extends Component {
         const today = new Date();
         const h = this.checkTime(today.getHours());
         const m = this.checkTime(today.getMinutes());
-        const s =  this.checkTime(today.getSeconds());
+        const s = this.checkTime(today.getSeconds());
         const date = this.checkTime(today.getDate());
         const month = this.checkTime(today.getMonth());
         const year = today.getFullYear();
-        const currentDateTime = year+"-"+month+"-"+date+" "+h+":"+m+":"+s;
+        const currentDateTime = year + "-" + month + "-" + date + " " + h + ":" + m + ":" + s;
         return currentDateTime;
     }
-  checkTime = i =>{
-    if (i < 10) {
-        i = "0" + i;
-      }
-      return i ;
-  }
+    checkTime = i => {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
     componentDidMount = () => {
         const _this = this;
         axios.get('https://api.myjson.com/bins/a4qpm')
-            .then(function (response) {
+            .then((response) => {
                 const sendResponse = response.data;
                 _this.setState({ default_menus: sendResponse });
             })
-            .catch(function (error) {
+            .catch((error) => {
                 console.log(error);
             });
     }
@@ -49,33 +49,23 @@ class RegisterForm extends Component {
                     elemTarget.nextElementSibling.classList.remove('hide');
                 } else {
                     //const checkCurrentUserEmail = this.validateRegEmail(val);
-                    this.callValidateEmailApi(val, elemTarget);
-                    /* const regBtn = this.refs.btn_register;
-                     if (!checkCurrentUserEmail) {
-                         elemTarget.classList.add('invalid');
-                         elemTarget.nextElementSibling.classList.remove('hide');
-                         elemTarget.nextElementSibling.innerHTML = "This Email is already Registered";
-                         regBtn.classList.add('disabled');
-                     } else {
-                         elemTarget.nextElementSibling.innerHTML = "Please Enter Valid Email";
-                         regBtn.classList.remove('disabled');
-                     }*/
+                    //  this.callValidateEmailApi(val, elemTarget);
                 }
             }
         }
     }
     validateRegEmail = (email) => {
-         const localStorageItems = localStorage.getItem('userInfo');
-          let flag = true;
-          if (localStorageItems !== undefined && localStorageItems!==null) {
-              const userInformation = JSON.parse(localStorage.getItem('userInfo'));
-              const users = userInformation.users;
-             const findUserRowIndex = users.map(function (e) { return e.userEmail; }).indexOf(email);
-              if(findUserRowIndex>-1){
-                  flag =false;
-              }
-          }
-          return flag;
+        const localStorageItems = localStorage.getItem('userInfo');
+        let flag = true;
+        if (localStorageItems !== undefined && localStorageItems !== null) {
+            const userInformation = JSON.parse(localStorage.getItem('userInfo'));
+            const users = userInformation.users;
+            const findUserRowIndex = users.map((e) => { return e.userEmail; }).indexOf(email);
+            if (findUserRowIndex > -1) {
+                flag = false;
+            }
+        }
+        return flag;
     }
     handleRegisterSubmit = () => {
         const email = this.state.reg_email.trim();
@@ -89,10 +79,10 @@ class RegisterForm extends Component {
         let flagSet = false;
         if (password === "" && password.length < 6) {
             pwdElement.classList.add('invalid');
-            pwdElement.nextElementSibling.classList.remove('hide'); 
+            pwdElement.nextElementSibling.classList.remove('hide');
         } else {
             pwdElement.classList.remove('invalid');
-            pwdElement.nextElementSibling.classList.add('hide');  
+            pwdElement.nextElementSibling.classList.add('hide');
         }
         if (fname === "" && fname.length < 6) {
             fnameElement.classList.add('invalid');
@@ -116,35 +106,13 @@ class RegisterForm extends Component {
             emailElement.nextElementSibling.classList.add('hide');
         }
         if (password !== "" && password.length >= 6 && fname !== "" && fname.length >= 3 && lname !== "" && email !== "") {
-            flagSet  = true ;
+            flagSet = true;
         }
         if (flagSet) {
-            /* const localStorageItems = localStorage.getItem('userInfo');
-              const menus = this.state.default_menus ;
-              let userMenus ;
-              if(menus===""){
-                userMenus =  userMenusJSON ;
-              }else{
-                userMenus  = menus ;
-              }
-             const userInfoObj = {"userName":fname+" "+lname, "userEmail": email, "userPassword": password, "loginStatus": 0, userMenus };
-            if (localStorageItems !== undefined && localStorageItems!==null) {
-                const userInformation = JSON.parse(localStorage.getItem('userInfo'));
-                const users = userInformation.users;
-                 users.push(userInfoObj);
-              localStorage.setItem('userInfo', JSON.stringify(userInformation));
-            }else{
-             const allUsers = [];
-              allUsers.push(userInfoObj);
-                const createNewObj = { "users": allUsers };
-               localStorage.setItem('userInfo', JSON.stringify(createNewObj));
-            }
-             window.location.reload();
-            //this.props.history.push('/');*/
             this.callRegisterApi();
         }
     }
-    callValidateEmailApi = async (email,elemTarget) => {
+    callValidateEmailApi = async (email, elemTarget) => {
         const response = await fetch('/api/validateEmail',
             {
                 method: 'POST',
@@ -181,7 +149,7 @@ class RegisterForm extends Component {
                     password: password,
                     firstname: fname,
                     lastname: lname,
-                    currenttime: pretime
+                    created_at: pretime
                 }),
                 headers: { "Content-Type": "application/json" }
             });

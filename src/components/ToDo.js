@@ -1,14 +1,17 @@
 import React, { Component } from "react";
+import moment from 'moment';
+
 class ToDo extends Component {
     state = { notficationCount: 0, menus: this.props.states.menus };
     getTodos = () => {
         const getUserMenus = this.state.menus;
         let listCounts = 0;
         const _this = this;
-        return Object.keys(getUserMenus).map(function (obj, i) {
+        return Object.keys(getUserMenus).map((obj, i) => {
             const addedLists = getUserMenus[obj].added_lists;
             const addedListsCount = addedLists.length;
             listCounts += addedListsCount;
+
             if (addedListsCount > 0) {
                 if (getUserMenus[obj].menuname !== 'My-Day') {
                     return (<div className="card todo_cards" key={'card-' + getUserMenus[obj].menuname}>
@@ -21,8 +24,10 @@ class ToDo extends Component {
                     </div>)
                 }
             }
+
         });
         _this.setState({ notficationCount: listCounts });
+
     }
     getTodoLists = (lists, todoName) => {
         let i = 0;
@@ -45,25 +50,10 @@ class ToDo extends Component {
             );
         });
     }
-    getDateFormatChange = (date) => {
-        if (date === "1970-01-01 00:00:00") {
-            return '-';
-        }
-        if (date !== '' && date !== undefined && date !== null) {
-            const dateTimeArr = date.split(' ');
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const dateOnly = dateTimeArr[0];
-            const dateArr = dateOnly.split("-");
-            const intMonth = months[dateArr[1] - 1];
-            const timeOnly = dateTimeArr[1];
-            const timeArr  = timeOnly.split(":");
-            let section = "AM";
-            const h = timeArr[0];
-            const m = timeArr[1];
-            if(h>=12){
-                section = "PM";
-            }
-            return intMonth + ' ' + dateArr[2] + ',' + dateArr[0]+" "+h+":"+m+" "+section;
+    getDateFormatChange = (dates) => {
+        if (dates !== '' && dates !== undefined && dates !== null) {
+            let date = moment(dates).format('lll');
+            return date;
         }
     }
     handleCheckboxTick = (clickElem) => {
@@ -73,7 +63,6 @@ class ToDo extends Component {
 
         const taskSelected = clickElem.target.getAttribute("data-task");
         const rowId = clickElem.target.getAttribute("data-row-id");
-        //const userInformation = this.props.states.allUsersInfo;
         let setStatus, setCompletedTime, setDBstatus;
 
         if (clickElem.target.checked) {
@@ -87,22 +76,17 @@ class ToDo extends Component {
         }
         const userMenus = this.state.menus;
         const selectedRowMenus = userMenus[taskSelected];
-        // for (let a in selectedRowMenus) {
         if (selectedRowMenus.menuname === taskSelected) {
             selectedRowMenus.added_lists[val].status = setStatus;
             selectedRowMenus.added_lists[val].completed_at = setCompletedTime;
-            // break;
-            // localStorage.setItem('userInfo', JSON.stringify(userInformation));
-            //this.props.states.menus = userMenus;
             this.callApiChangeTodoStatus(taskSelected, rowId, setDBstatus);
             this.setState({ menus: userMenus });
         }
-        // }
     }
     handleEditListName = (edittodo, row, rowid) => {
         const userMenus = this.state.menus;
         const _this = this;
-        return function () {
+        return () => {
             const modal = _this.refs.editListModal;
             modal.style.display = "block";
             _this.refs.editTaskName.innerHTML = edittodo + " Todo";
@@ -117,7 +101,7 @@ class ToDo extends Component {
     }
     getTodoNotification = (listsObj) => {
         let listCounts = 0;
-        Object.keys(listsObj).map(function (obj, i) {
+        Object.keys(listsObj).map((obj, i) => {
             const addedListsCount = listsObj[obj].added_lists.length;
             if (listsObj[obj].menuname !== 'My-Day') {
                 listCounts += addedListsCount;
@@ -141,18 +125,14 @@ class ToDo extends Component {
         const taskTodo = this.refs.edit_todo.value;
         const menus = this.props.states.menus;
         const rowID = taskInput.getAttribute('data-row-id');
-        //  const userInformation = this.props.states.allUsersInfo;
         if (taskEdited !== "" && taskEdited.length > 10) {
             taskInput.classList.remove('invalid');
             taskInput.nextElementSibling.classList.add('hide');
             const selectedRowMenus = menus[taskTodo];
-            // for (var a in menus) {
+
             if (selectedRowMenus.menuname === taskTodo) {
                 selectedRowMenus.added_lists[taskIndex].title = taskEdited;
-                // break;
             }
-            //}
-            // localStorage.setItem('userInfo', JSON.stringify(userInformation));
             this.callApiEditTodo(taskTodo, taskEdited, rowID);
             this.setState({ menus: menus });
 
