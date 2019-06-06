@@ -4,18 +4,20 @@ import moment from 'moment';
 class MyDay extends Component {
   constructor(props) {
     super(props);
-    this.state = { menus: this.props.states.menus };
+    this.state = { menus: this.props.states.menus, todosTodayEmpty: false };
   }
+
   getTodayDate = () => {
     const todayDate = this.props.states.datetime;
     const dateArr = todayDate.split(' ');
     return dateArr[1].slice(0, -1) + '-' + dateArr[0] + '-' + dateArr[2];
   }
+
   getTodayTask = () => {
     const _this = this;
     const getDate = _this.props.states.datetime2;
     const userMenus = _this.state.menus;
-    let listCount = 0;
+
     const dateArr = getDate.split(' ');
 
     return Object.keys(userMenus).map((menuObj, ind) => {
@@ -30,6 +32,10 @@ class MyDay extends Component {
             if (item.status === "completed") {
               addChecked = { ["checked"]: true };
             }
+            if (!this.state.todosTodayEmpty) {
+              this.setState({ todosTodayEmpty: true });
+            }
+
             return (<li className="list-group-item" key={i}>
               <label className="checkobox">{item.title}<input type="checkbox" data-task={menuObj} data-row-id={item.id} value={i} onChange={((e) => _this.handleCheckboxTick(e))} {...addChecked} /><span className="checkmark"></span>
                 <span className={item.status + " task_status"}>{item.status}</span>
@@ -37,14 +43,11 @@ class MyDay extends Component {
               </label></li>);
           }
         });
-        listCount++;
+
       }
     });
-
-    if (listCount === 0) {
-      return (<li className="list-group-item" key="empty">Your Task Lists are Empty. </li>);
-    }
   }
+
   handleCheckboxTick = (clickElem) => {
     const getDate = this.props.states.datetime;
     const val = clickElem.target.value;
@@ -63,18 +66,16 @@ class MyDay extends Component {
     }
     const userMenus = this.state.menus;
     const selectedTodoTask = userMenus[taskSelected];
-    //for (let a in userMenus) {
+
     if (selectedTodoTask.menuname === taskSelected) {
       selectedTodoTask.added_lists[val].status = setStatus;
       selectedTodoTask.added_lists[val].completed_at = setCompletedTime;
-      //   break;
     }
-    //}
-    //localStorage.setItem('userInfo', JSON.stringify(userInformation));
-    //this.props.states.menus = userMenus;
+
     this.setState({ menus: userMenus });
     this.callApiChangeTodoStatus(taskSelected, rowId, setDBstatus);
   }
+
   callApiChangeTodoStatus = async (taskSelected, rowId, setDBstatus) => {
     const _this = this;
     let completed_at;
@@ -100,6 +101,7 @@ class MyDay extends Component {
     if (body.status === "OK") {
     }
   }
+
   render() {
     return (
       <div className="row">
@@ -111,6 +113,8 @@ class MyDay extends Component {
             <div className="card-header"> Today Todos <span>{this.getTodayDate()}</span></div>
             <div className="card-body">
               <ul className="list-group list-group-flush">
+                {!this.state.todosTodayEmpty && (
+                  <li className="list-group-item" key="empty">Your Task Lists are Empty. </li>)}
                 {this.getTodayTask()}
               </ul>
             </div>

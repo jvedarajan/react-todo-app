@@ -327,12 +327,11 @@ span.menu_itemcount{
 }
 /* The container */
 label.checkobox {
-  display: block;
+  display: inline-block;
   position: relative;
   padding-left: 35px;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
   cursor: pointer;
-  font-size: 16px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
