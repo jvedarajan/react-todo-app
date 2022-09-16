@@ -6,7 +6,7 @@
     "axios": "^0.18.0",
     "babel-preset-es2015-node6": "^0.4.0",
     "body-parser": "^1.18.3",
-    "bootstrap": "^4.1.1",
+    "bootstrap": "^4.3.1",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
     "create-react-class": "^15.6.3",
